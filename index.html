@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mindful Bharat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#0f766e;--primary-hover:#0d9488;--primary-light:#ccfbf1;--bg:#f0fdfa;--surface:#ffffff;--text:#0f172a;--text-secondary:#475569;--border:#cbd5e1;--success:#16a34a;--danger:#dc2626;--danger-bg:#fee2e2;--danger-text:#991b1b;--radius:12px;--radius-sm:6px;--shadow:0 4px 16px rgba(0,0,0,0.06);--shadow-hover:0 8px 30px rgba(0,0,0,0.08)}
+[data-theme=dark]{--primary:#2dd4bf;--primary-light:#134e4a;--bg:#0f172a;--surface:#1e293b;--text:#e2e8f0;--text-secondary:#94a3b8;--border:#334155}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+input,button{font-family:inherit}
+.hidden{display:none!important}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:var(--radius);background:var(--text);color:var(--bg);font-size:14px;font-weight:500;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1}
+#toast.error{background:var(--danger);color:#fff}
+#toast.success{background:var(--success);color:#fff}
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,var(--bg),var(--primary-light))}
+.auth-box{width:100%;max-width:400px;background:var(--surface);border-radius:var(--radius);padding:36px 32px;box-shadow:var(--shadow-hover);border:1px solid var(--border)}
+.auth-box h1{font-size:28px;font-weight:800;color:var(--primary);text-align:center}
+.auth-box .subtitle{text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:24px}
+.auth-box .field{margin-bottom:14px}
+.auth-box .field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.auth-box .field input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px;transition:border-color .2s}
+.auth-box .field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.auth-box .btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:15px;transition:background .2s;margin-top:4px}
+.auth-box .btn:hover{background:var(--primary-hover)}
+.auth-box .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.auth-box .switch-link{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:14px}
+.auth-box .switch-link a{color:var(--primary);text-decoration:none;font-weight:600;cursor:pointer}
+.auth-box .switch-link a:hover{text-decoration:underline}
+.auth-error{background:var(--danger-bg);color:var(--danger-text);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;display:none;margin-bottom:14px}
+.auth-success{background:#dcfce7;color:#166534;padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;display:none;margin-bottom:14px}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header-inner{max-width:1024px;margin:0 auto;display:flex;align-items:center;height:60px;gap:16px}
+.header-brand{font-size:20px;font-weight:800;color:var(--primary);white-space:nowrap}
+.header-nav{display:flex;gap:4px;flex:1;overflow-x:auto}
+.nav-link{padding:6px 16px;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:13px;font-weight:500;white-space:nowrap;cursor:pointer;border:none;background:none;transition:all .2s}
+.nav-link:hover{background:var(--surface-hover,var(--surface));color:var(--text)}
+.nav-link.active{background:var(--primary-light);color:var(--primary);font-weight:600}
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.header-user{font-size:12px;color:var(--text-secondary);font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.theme-toggle{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px}
+.btn-secondary{padding:5px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-weight:600;font-size:12px}
+.btn-secondary:hover{background:var(--surface);border-color:var(--text-secondary)}
+.mobile-menu-btn{display:none;width:34px;height:34px;border:none;background:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.mobile-menu-btn span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px}
+.app-main{max-width:1024px;margin:0 auto;padding:28px 20px}
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.stat-card .stat-value{font-size:32px;font-weight:800;color:var(--primary)}
+.stat-card .stat-label{font-size:13px;color:var(--text-secondary);margin-top:4px;font-weight:500}
+.planner-header{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.planner-input{display:flex;gap:8px;flex-wrap:wrap}
+.planner-input input{flex:1;min-width:160px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px}
+.planner-input input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.planner-input input[type=date]{min-width:130px;flex:0 1 auto}
+.btn-primary{background:var(--primary);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:14px;transition:background .2s}
+.btn-primary:hover{background:var(--primary-hover)}
+.planner-filters{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;color:var(--text-secondary);font-weight:500;transition:all .2s}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border);transition:box-shadow .2s}
+.task-item:hover{box-shadow:var(--shadow-hover)}
+.task-item.completed .task-title{text-decoration:line-through;color:var(--text-secondary)}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;background:none;padding:0;flex-shrink:0;transition:all .2s}
+.task-check:hover{border-color:var(--primary)}
+.task-check.checked{background:var(--success);border-color:var(--success)}
+.task-check.checked::after{content:'';width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+.task-info{flex:1}
+.task-title{font-weight:600;font-size:14px}
+.task-meta{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.task-delete{width:30px;height:30px;border:none;background:none;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:18px;transition:all .2s}
+.task-delete:hover{background:var(--danger-bg);color:var(--danger)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-secondary);font-size:14px}
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.mood-btn{padding:20px 12px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);cursor:pointer;text-align:center;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--shadow);transition:all .2s}
+.mood-btn:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.mood-btn.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.mood-btn .mood-icon{font-size:28px;display:block;margin-bottom:4px}
+.mood-today{margin-bottom:24px;background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.mood-today h3{font-size:16px;font-weight:600;margin-bottom:12px}
+.mood-week{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:12px 0 4px}
+.mood-day{width:64px;text-align:center}
+.mood-day .day-name{font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;text-transform:uppercase}
+.mood-day .day-block{width:48px;height:48px;border-radius:var(--radius);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:var(--surface);border:2px dashed var(--border);color:var(--text-secondary)}
+.mood-day .day-block.happy{background:#dcfce7;color:#166534;border:2px solid var(--success)}
+.mood-day .day-block.neutral{background:var(--primary-light);color:var(--primary);border:2px solid var(--primary)}
+.mood-day .day-block.stressed{background:var(--danger-bg);color:var(--danger-text);border:2px solid var(--danger)}
+.mood-day .day-date{font-size:10px;color:var(--text-secondary);margin-top:3px;font-weight:500}
+.help-search{margin-bottom:20px}
+.help-search input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);outline:none;font-size:14px;box-shadow:var(--shadow)}
+.help-search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.help-category{margin-bottom:24px}
+.help-category h3{font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:3px solid var(--primary-light);color:var(--primary)}
+.help-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.help-card{background:var(--surface);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.help-card h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.help-card .help-phone{font-size:14px;color:var(--primary);font-weight:600;margin-bottom:3px}
+.help-card .help-phone a{color:var(--primary);text-decoration:none}
+.help-card .help-website{font-size:12px;color:var(--text-secondary);margin-bottom:3px}
+.help-card .help-desc{font-size:12px;color:var(--text-secondary)}
+.schedule-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.schedule-item{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--primary)}
+.schedule-item .sched-time{font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;min-width:100px}
+.schedule-item .sched-title{font-size:13px;flex:1;font-weight:500}
+.schedule-item .sched-priority{font-size:10px;padding:2px 10px;border-radius:12px;background:var(--primary-light);color:var(--primary);font-weight:600}
+.schedule-empty{text-align:center;padding:30px 20px;color:var(--text-secondary);font-size:13px}
+@media(max-width:640px){.auth-box{padding:28px 20px;border:none;box-shadow:none}.stats-grid{grid-template-columns:1fr}.mood-grid{gap:8px}.mood-btn{padding:14px 8px}.mood-btn .mood-icon{font-size:22px}.mood-day{width:52px}.mood-day .day-block{width:40px;height:40px;font-size:15px}.header-nav{position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);flex-direction:column;padding:10px;display:none;z-index:99}.header-nav.open{display:flex}.nav-link{width:100%;padding:10px 16px}.mobile-menu-btn{display:flex}.header-user{display:none}.help-cards{grid-template-columns:1fr}.app-main{padding:20px 14px}}
+@media(min-width:641px){.mobile-menu-btn{display:none!important}.header-nav{display:flex!important}}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="app">
+
+<div id="auth-screen">
+    <div class="auth-box">
+        <h1>Mindful Bharat</h1>
+        <p class="subtitle">Your wellness companion</p>
+        
+        <div id="auth-error" class="auth-error"></div>
+        <div id="auth-success" class="auth-success"></div>
+
+        <div id="login-view">
+            <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="Enter your password"></div>
+            <button class="btn" id="login-btn">Login</button>
+            <div class="switch-link">Don't have an account? <a id="switch-to-signup">Sign up</a></div>
+        </div>
+
+        <div id="signup-view" style="display:none">
+            <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="signup-password" placeholder="Min 6 characters" minlength="6"></div>
+            <button class="btn" id="signup-btn">Create Account</button>
+            <div class="switch-link">Already have an account? <a id="switch-to-login">Login</a></div>
+        </div>
+
+    </div>
+</div>
+
+<div id="app-screen" class="hidden">
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="header-brand">Mindful Bharat</div>
+            <nav class="header-nav" id="main-nav">
+                <button class="nav-link active" data-page="dashboard">Dashboard</button>
+                <button class="nav-link" data-page="planner">Planner</button>
+                <button class="nav-link" data-page="mood">Mood</button>
+                <button class="nav-link" data-page="help">Help</button>
+            </nav>
+            <div class="header-actions">
+                <span class="header-user" id="header-user"></span>
+                <button class="theme-toggle" id="theme-toggle">D</button>
+                <button class="btn-secondary" id="logout-btn">Logout</button>
+                <button class="mobile-menu-btn" id="mobile-menu-btn"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section id="page-dashboard" class="page active">
+            <h2 class="section-title">Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-value" id="stat-tasks">0</div><div class="stat-label">Tasks</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-moods">0</div><div class="stat-label">Moods</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-streak">0</div><div class="stat-label">Day Streak</div></div>
+            </div>
+        </section>
+
+        <section id="page-planner" class="page">
+            <h2 class="section-title">Planner</h2>
+            <div class="planner-header">
+                <div class="planner-input">
+                    <input type="text" id="task-input" placeholder="Add a task...">
+                    <input type="date" id="task-date">
+                    <button class="btn-primary" id="task-add-btn">Add</button>
+                </div>
+                <div class="planner-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="pending">Pending</button>
+                    <button class="filter-btn" data-filter="completed">Done</button>
+                </div>
+            </div>
+            <div id="task-list" class="task-list"></div>
+
+            <div style="margin-top:28px;border-top:2px solid var(--border);padding-top:20px">
+                <h3 class="section-title">AI Schedule</h3>
+                <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Enter free time slots to schedule tasks</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+                    <input type="text" id="ai-free-slots" placeholder="9:00-10:30, 14:00-16:00" style="flex:1;min-width:180px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px">
+                    <select id="ai-duration" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px">
+                        <option value="15">15 min</option>
+                        <option value="30" selected>30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60">60 min</option>
+                    </select>
+                    <button class="btn-primary" id="ai-schedule-btn" style="padding:8px 16px;font-size:13px">Generate</button>
+                </div>
+                <div id="ai-schedule-results"></div>
+            </div>
+        </section>
+
+        <section id="page-mood" class="page">
+            <h2 class="section-title">Mood Tracker</h2>
+            <div class="mood-today">
+                <h3>How are you feeling today?</h3>
+                <div class="mood-grid" id="mood-select">
+                    <button class="mood-btn" data-mood="happy">Happy</button>
+                    <button class="mood-btn" data-mood="neutral">Neutral</button>
+                    <button class="mood-btn" data-mood="stressed">Stressed</button>
+                </div>
+            </div>
+            <h3 class="section-title">Last 7 Days</h3>
+            <div class="mood-week" id="mood-week"></div>
+        </section>
+
+        <section id="page-help" class="page">
+            <h2 class="section-title">Help Hub</h2>
+            <div class="help-search"><input type="text" id="help-search-input" placeholder="Search helplines..."></div>
+            <div id="help-results"></div>
+        </section>
+    </main>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
+<script>
+(function() {
+    // ============ FIREBASE AUTH ============
+    var firebaseConfig = {
+        apiKey: "AIzaSyDXhqnrDiK8Ag86LEg9ktDdfJ9WjdBPwXI",
+        authDomain: "chat-app-3fc2a.firebaseapp.com",
+        projectId: "chat-app-3fc2a",
+        storageBucket: "chat-app-3fc2a.firebasestorage.app",
+        messagingSenderId: "774830345170",
+        appId: "1:774830345170:web:2711b8a3457019df3ad60b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+
+    // ============ STATE ============
+    var currentUser = null;
+    var currentPage = 'dashboard';
+    var tasks = [], moods = [], helplines = [];
+    var filterMode = 'all';
+    var todayMood = null;
+    var db = null;
+    var dbReady = false;
+
+    // ============ HELPERS ============
+    function qs(id) { return document.getElementById(id); }
+    
+    function toast(msg, type) {
+        var el = qs('toast');
+        el.textContent = msg;
+        el.className = type || '';
+        el.classList.add('show');
+        clearTimeout(el._timer);
+        el._timer = setTimeout(function() { el.classList.remove('show'); }, 3000);
+    }
+    
+    function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+    
+    function getUserId() { return currentUser ? currentUser.email : null; }
+    
+    // ============ UI HELPERS ============
+    function showError(msg) {
+        var el = qs('auth-error');
+        el.textContent = msg;
+        el.style.display = 'block';
+        qs('auth-success').style.display = 'none';
+    }
+    
+    function showSuccess(msg) {
+        var el = qs('auth-success');
+        el.textContent = msg;
+        el.style.display = 'block';
+        qs('auth-error').style.display = 'none';
+    }
+    
+    function hideMessages() {
+        qs('auth-error').style.display = 'none';
+        qs('auth-success').style.display = 'none';
+    }
+
+    // ============ INDEXEDDB ============
+    var DB_NAME = 'MindfulBharat', DB_VERSION = 3;
+    
+    function initDatabase() {
+        return new Promise(function(resolve, reject) {
+            var req = indexedDB.open(DB_NAME, DB_VERSION);
+            
+            req.onupgradeneeded = function(e) {
+                var d = e.target.result;
+                console.log('Migrating database...');
+                
+                if (!d.objectStoreNames.contains('tasks')) {
+                    var ts = d.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
+                    ts.createIndex('userId', 'userId', { unique: false });
+                    console.log('Created tasks store');
+                }
+                
+                if (!d.objectStoreNames.contains('moods')) {
+                    var ms = d.createObjectStore('moods', { keyPath: 'id', autoIncrement: true });
+                    ms.createIndex('userId', 'userId', { unique: false });
+                    ms.createIndex('date', 'date', { unique: false });
+                    console.log('Created moods store');
+                }
+                
+                if (!d.objectStoreNames.contains('helplines')) {
+                    var hs = d.createObjectStore('helplines', { keyPath: 'id', autoIncrement: true });
+                    hs.createIndex('category', 'category', { unique: false });
+                    console.log('Created helplines store');
+                    
+                    var data = [
+                        { category: 'Mental Health', name: 'iCall Helpline', phone: '022-25521111', description: 'Free counselling', website: 'icallhelpline.org' },
+                        { category: 'Mental Health', name: 'Vandrevala Foundation', phone: '1860-266-2345', description: '24/7 mental health helpline', website: 'vandrevalafoundation.com' },
+                        { category: 'Mental Health', name: 'Snehi Foundation', phone: '011-41036474', description: 'Emotional support', website: 'snehifoundation.org' },
+                        { category: 'Mental Health', name: 'Sumaitri', phone: '011-23389090', description: 'Emotional support', website: 'sumaitri.org' },
+                        { category: 'Crisis', name: 'KIRAN Helpline', phone: '1800-599-0019', description: '24/7 crisis support', website: 'kirannationalhelpline.in' },
+                        { category: 'Crisis', name: 'S.A.A.S. Helpline', phone: '1800-123-4321', description: 'Suicide prevention', website: 'saashelpline.org' },
+                        { category: 'Crisis', name: 'AASRA', phone: '9820466726', description: '24/7 suicide prevention', website: 'aasra.info' },
+                        { category: 'General', name: 'Jeevan Aastha', phone: '1800-233-3330', description: 'Crisis intervention', website: 'jeevanaastha.in' }
+                    ];
+                    data.forEach(function(h) { hs.add(h); });
+                }
+            };
+            
+            req.onsuccess = function(e) { 
+                db = e.target.result; 
+                dbReady = true; 
+                console.log('Database ready');
+                resolve(); 
+            };
+            
+            req.onerror = function(e) { 
+                console.error('Database error:', e.target.error);
+                reject(e.target.error); 
+            };
+        });
+    }
+
+    function dbAdd(store, data) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var tx = db.transaction(store, 'readwrite');
+            var req = tx.objectStore(store).add(data);
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbGet(store, key) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var req = db.transaction(store, 'readonly').objectStore(store).get(key);
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbGetAll(store, idx, val) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var storeObj = db.transaction(store, 'readonly').objectStore(store);
+            var req = idx ? storeObj.index(idx).getAll(val) : storeObj.getAll();
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbUpdate(store, key, data) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var req = db.transaction(store, 'readwrite').objectStore(store).put(data);
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbDelete(store, key) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var req = db.transaction(store, 'readwrite').objectStore(store).delete(key);
+            req.onsuccess = function() { resolve(); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+
+    // ============ AUTH FUNCTIONS ============
+    function signup(email, password) {
+        return auth.createUserWithEmailAndPassword(email, password)
+            .then(function(cred) {
+                return { success: true, user: cred.user };
+            })
+            .catch(function(error) {
+                return { error: error.message };
+            });
+    }
+
+    function login(email, password) {
+        return auth.signInWithEmailAndPassword(email, password)
+            .then(function(cred) {
+                return { success: true, user: cred.user };
+            })
+            .catch(function(error) {
+                return { error: error.message };
+            });
+    }
+
+    function logout() {
+        return auth.signOut();
+    }
+
+    // ============ DATA FUNCTIONS ============
+    function loadTasks() {
+        var uid = getUserId();
+        if (!uid) return Promise.resolve([]);
+        return dbGetAll('tasks', 'userId', uid).then(function(r) {
+            tasks = r.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+            return tasks;
+        }).catch(function() { tasks = []; return tasks; });
+    }
+    
+    function loadMoods() {
+        var uid = getUserId();
+        if (!uid) return Promise.resolve([]);
+        return dbGetAll('moods', 'userId', uid).then(function(r) {
+            moods = r.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+            return moods;
+        }).catch(function() { moods = []; return moods; });
+    }
+    
+    function loadHelplines() {
+        return dbGetAll('helplines').then(function(r) {
+            helplines = r.sort(function(a, b) { return a.category.localeCompare(b.category); });
+            return helplines;
+        }).catch(function() { helplines = []; return helplines; });
+    }
+    
+    function loadAll() { return Promise.all([loadTasks(), loadMoods(), loadHelplines()]); }
+
+    function addTask(title, dueDate) {
+        if (!getUserId()) { toast('Login first', 'error'); return; }
+        var task = { 
+            userId: getUserId(), 
+            title: title, 
+            completed: false, 
+            dueDate: dueDate || null, 
+            createdAt: new Date().toISOString() 
+        };
+        dbAdd('tasks', task).then(function(id) {
+            task.id = id;
+            tasks.unshift(task);
+            renderPlanner();
+            toast('Task added', 'success');
+        }).catch(function() { toast('Failed to add task', 'error'); });
+    }
+
+    function toggleTask(id, completed) {
+        var task = tasks.find(function(t) { return t.id === id; });
+        if (!task) return;
+        var updated = { ...task, completed: completed };
+        dbUpdate('tasks', id, updated).then(function() {
+            task.completed = completed;
+            renderPlanner();
+        }).catch(function() { toast('Failed to update', 'error'); });
+    }
+
+    function deleteTask(id) {
+        dbDelete('tasks', id).then(function() {
+            tasks = tasks.filter(function(t) { return t.id !== id; });
+            renderPlanner();
+            toast('Task deleted', 'success');
+        }).catch(function() { toast('Failed to delete', 'error'); });
+    }
+
+    function setMood(mood) {
+        if (!getUserId()) { toast('Login first', 'error'); return; }
+        var today = new Date().toISOString().split('T')[0];
+        var existing = moods.find(function(m) { return m.date === today; });
+        
+        if (existing) {
+            var updated = { ...existing, mood: mood };
+            dbUpdate('moods', existing.id, updated).then(function() {
+                existing.mood = mood;
+                todayMood = mood;
+                renderMood();
+                toast('Mood updated', 'success');
+            }).catch(function() { toast('Failed to update', 'error'); });
+        } else {
+            var entry = { 
+                userId: getUserId(), 
+                mood: mood, 
+                date: today, 
+                createdAt: new Date().toISOString() 
+            };
+            dbAdd('moods', entry).then(function(id) {
+                entry.id = id;
+                moods.unshift(entry);
+                todayMood = mood;
+                renderMood();
+                toast('Mood logged', 'success');
+            }).catch(function() { toast('Failed to log', 'error'); });
+        }
+    }
+
+    function calcStreak() {
+        if (!moods.length) return 0;
+        var seen = {};
+        var dates = [];
+        moods.forEach(function(m) { 
+            if (!seen[m.date]) { 
+                seen[m.date] = true; 
+                dates.push(m.date); 
+            } 
+        });
+        dates.sort().reverse();
+        if (!dates.length) return 0;
+        
+        var today = new Date().toISOString().split('T')[0];
+        var check = new Date(today);
+        if (dates[0] !== today) {
+            var y = new Date();
+            y.setDate(y.getDate() - 1);
+            var yes = y.toISOString().split('T')[0];
+            if (dates[0] !== yes) return 0;
+            check = y;
+        }
+        
+        var streak = 0;
+        while (true) {
+            var d = check.toISOString().split('T')[0];
+            if (seen[d]) { 
+                streak++; 
+                check.setDate(check.getDate() - 1); 
+            } else break;
+        }
+        return streak;
+    }
+
+    // ============ RENDER FUNCTIONS ============
+    function renderDashboard() {
+        qs('stat-tasks').textContent = tasks.length;
+        qs('stat-moods').textContent = moods.length;
+        qs('stat-streak').textContent = calcStreak();
+    }
+
+    function renderPlanner() {
+        var list = qs('task-list');
+        var filtered = tasks.filter(function(t) {
+            if (filterMode === 'all') return true;
+            if (filterMode === 'pending') return !t.completed;
+            if (filterMode === 'completed') return t.completed;
+            return true;
+        });
+        
+        if (!filtered.length) {
+            list.innerHTML = '<div class="empty-state">' + (filterMode === 'all' ? 'No tasks yet. Add one!' : 'No tasks match this filter.') + '</div>';
+            return;
+        }
+        
+        var html = '';
+        filtered.forEach(function(task) {
+            var dateStr = task.dueDate ? new Date(task.dueDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+            html += '<div class="task-item' + (task.completed ? ' completed' : '') + '">' +
+                '<button class="task-check' + (task.completed ? ' checked' : '') + '" data-id="' + task.id + '" data-completed="' + task.completed + '"></button>' +
+                '<div class="task-info"><div class="task-title">' + escapeHtml(task.title) + '</div>' +
+                (dateStr ? '<div class="task-meta">Due: ' + dateStr + '</div>' : '') + '</div>' +
+                '<button class="task-delete" data-id="' + task.id + '">&times;</button></div>';
+        });
+        list.innerHTML = html;
+        
+        list.querySelectorAll('.task-check').forEach(function(b) {
+            b.addEventListener('click', function() {
+                toggleTask(Number(b.dataset.id), b.dataset.completed === 'true' ? false : true);
+            });
+        });
+        list.querySelectorAll('.task-delete').forEach(function(b) {
+            b.addEventListener('click', function() { deleteTask(Number(b.dataset.id)); });
+        });
+    }
+
+    function renderMood() {
+        var today = new Date().toISOString().split('T')[0];
+        var existing = moods.find(function(m) { return m.date === today; });
+        todayMood = existing ? existing.mood : null;
+        
+        document.querySelectorAll('.mood-btn').forEach(function(b) {
+            b.classList.toggle('selected', b.dataset.mood === todayMood);
+        });
+        
+        var weekContainer = qs('mood-week');
+        var daysHtml = '';
+        for (var i = 6; i >= 0; i--) {
+            var d = new Date();
+            d.setDate(d.getDate() - i);
+            var dateStr = d.toISOString().split('T')[0];
+            var found = moods.find(function(m) { return m.date === dateStr; });
+            var mood = found ? found.mood : null;
+            var dayName = d.toLocaleDateString('en-IN', { weekday: 'short' });
+            var dayDate = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            var cls = 'day-block' + (mood ? ' ' + mood : '');
+            var icon = mood === 'happy' ? 'H' : mood === 'neutral' ? 'N' : mood === 'stressed' ? 'S' : '';
+            daysHtml += '<div class="mood-day"><div class="day-name">' + dayName + '</div><div class="' + cls + '">' + icon + '</div><div class="day-date">' + dayDate + '</div></div>';
+        }
+        weekContainer.innerHTML = daysHtml;
+    }
+
+    function renderHelp() {
+        var query = qs('help-search-input').value.toLowerCase().trim();
+        var container = qs('help-results');
+        var filtered = helplines.filter(function(h) {
+            return !query || 
+                h.category.toLowerCase().indexOf(query) !== -1 || 
+                h.name.toLowerCase().indexOf(query) !== -1 || 
+                (h.description && h.description.toLowerCase().indexOf(query) !== -1);
+        });
+        
+        var grouped = {};
+        filtered.forEach(function(h) {
+            var cat = h.category || 'General';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(h);
+        });
+        
+        var cats = Object.keys(grouped);
+        if (!cats.length) { 
+            container.innerHTML = '<div class="empty-state">No helplines found</div>'; 
+            return; 
+        }
+        
+        var html = '';
+        cats.forEach(function(cat) {
+            var itemsHtml = '';
+            grouped[cat].forEach(function(h) {
+                itemsHtml += '<div class="help-card"><h4>' + escapeHtml(h.name) + '</h4>' +
+                    (h.phone ? '<div class="help-phone"><a href="tel:' + h.phone.replace(/\s/g, '') + '">' + escapeHtml(h.phone) + '</a></div>' : '') +
+                    (h.website ? '<div class="help-website">' + escapeHtml(h.website) + '</div>' : '') +
+                    (h.description ? '<div class="help-desc">' + escapeHtml(h.description) + '</div>' : '') + '</div>';
+            });
+            html += '<div class="help-category"><h3>' + escapeHtml(cat) + '</h3><div class="help-cards">' + itemsHtml + '</div></div>';
+        });
+        container.innerHTML = html;
+    }
+
+    function navigate(page) {
+        currentPage = page;
+        document.querySelectorAll('.nav-link').forEach(function(l) {
+            l.classList.toggle('active', l.dataset.page === page);
+        });
+        document.querySelectorAll('.page').forEach(function(p) {
+            p.classList.toggle('active', p.id === 'page-' + page);
+        });
+        if (page === 'dashboard') renderDashboard();
+        if (page === 'planner') renderPlanner();
+        if (page === 'mood') renderMood();
+        if (page === 'help') renderHelp();
+    }
+
+    function showApp() {
+        qs('auth-screen').classList.add('hidden');
+        qs('app-screen').classList.remove('hidden');
+    }
+    
+    function showAuth() {
+        qs('auth-screen').classList.remove('hidden');
+        qs('app-screen').classList.add('hidden');
+        qs('login-view').style.display = 'block';
+        qs('signup-view').style.display = 'none';
+    }
+
+    // ============ EVENTS ============
+    qs('switch-to-signup').addEventListener('click', function(e) {
+        e.preventDefault();
+        qs('login-view').style.display = 'none';
+        qs('signup-view').style.display = 'block';
+        hideMessages();
+    });
+    
+    qs('switch-to-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        qs('login-view').style.display = 'block';
+        qs('signup-view').style.display = 'none';
+        hideMessages();
+    });
+
+    qs('signup-btn').addEventListener('click', function() {
+        var email = qs('signup-email').value.trim();
+        var password = qs('signup-password').value;
+        
+        if (!email || !password) {
+            toast('Fill all fields', 'error');
+            return;
+        }
+        if (password.length < 6) {
+            toast('Password must be 6+ characters', 'error');
+            return;
+        }
+        
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+        hideMessages();
+        
+        signup(email, password).then(function(result) {
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+            
+            if (result.error) {
+                if (result.error.indexOf('email-already-in-use') !== -1) {
+                    showError('Account already exists. Please login.');
+                } else {
+                    showError(getFirebaseErrorMessage(result.error));
+                }
+                return;
+            }
+            
+            if (result.success) {
+                toast('Account created! Welcome!', 'success');
+            }
+        }).catch(function(err) {
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+            console.error('Signup error:', err);
+            showError('Something went wrong: ' + (err.message || 'Unknown error'));
+        });
+    });
+
+    qs('login-btn').addEventListener('click', function() {
+        var email = qs('login-email').value.trim();
+        var password = qs('login-password').value;
+        
+        if (!email || !password) {
+            toast('Fill all fields', 'error');
+            return;
+        }
+        
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+        hideMessages();
+        
+        login(email, password).then(function(result) {
+            btn.disabled = false;
+            btn.textContent = 'Login';
+            
+            if (result.error) {
+                showError(getFirebaseErrorMessage(result.error));
+                return;
+            }
+        }).catch(function(err) {
+            btn.disabled = false;
+            btn.textContent = 'Login';
+            console.error('Login error:', err);
+            showError('Something went wrong');
+        });
+    });
+
+    qs('login-password').addEventListener('keydown', function(e) { 
+        if (e.key === 'Enter') qs('login-btn').click(); 
+    });
+    qs('signup-password').addEventListener('keydown', function(e) { 
+        if (e.key === 'Enter') qs('signup-btn').click(); 
+    });
+
+    qs('logout-btn').addEventListener('click', function() {
+        logout();
+        toast('Logged out', 'success');
+    });
+
+    function getFirebaseErrorMessage(msg) {
+        if (msg.indexOf('user-not-found') !== -1) return 'No account found with this email';
+        if (msg.indexOf('wrong-password') !== -1) return 'Invalid password';
+        if (msg.indexOf('invalid-email') !== -1) return 'Invalid email address';
+        if (msg.indexOf('weak-password') !== -1) return 'Password should be at least 6 characters';
+        return msg;
+    }
+
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            navigate(link.dataset.page);
+            if (window.innerWidth <= 640) qs('main-nav').classList.remove('open');
+        });
+    });
+    
+    qs('mobile-menu-btn').addEventListener('click', function() {
+        qs('main-nav').classList.toggle('open');
+    });
+
+    qs('task-add-btn').addEventListener('click', function() {
+        var title = qs('task-input').value.trim();
+        if (!title) { 
+            toast('Enter a task title', 'error'); 
+            return; 
+        }
+        addTask(title, qs('task-date').value || null);
+        qs('task-input').value = '';
+        qs('task-date').value = '';
+    });
+    
+    qs('task-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') qs('task-add-btn').click();
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(function(b) {
+        b.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(function(f) { 
+                f.classList.remove('active'); 
+            });
+            b.classList.add('active');
+            filterMode = b.dataset.filter;
+            renderPlanner();
+        });
+    });
+
+    document.querySelectorAll('.mood-btn').forEach(function(b) {
+        b.addEventListener('click', function() {
+            setMood(b.dataset.mood);
+        });
+    });
+
+    qs('help-search-input').addEventListener('input', renderHelp);
+
+    var themeToggle = qs('theme-toggle');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    var darkMode = localStorage.getItem('theme');
+    if (!darkMode) darkMode = prefersDark.matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', darkMode);
+    themeToggle.textContent = darkMode === 'dark' ? 'L' : 'D';
+    
+    themeToggle.addEventListener('click', function() {
+        var cur = document.documentElement.getAttribute('data-theme');
+        var next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        themeToggle.textContent = next === 'dark' ? 'L' : 'D';
+    });
+
+    function parseTime(str) {
+        str = str.trim().toLowerCase();
+        var parts = str.split(':');
+        if (parts.length === 2) {
+            var h = parseInt(parts[0]), m = parseInt(parts[1]);
+            if (!isNaN(h) && !isNaN(m) && h >= 0 && h < 24 && m >= 0 && m < 60) return h * 60 + m;
+        }
+        return null;
+    }
+    
+    function formatTime(minutes) {
+        var h = Math.floor(minutes / 60), m = minutes % 60;
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+        return h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+    }
+    
+    qs('ai-schedule-btn').addEventListener('click', function() {
+        var slotsInput = qs('ai-free-slots').value.trim();
+        var duration = parseInt(qs('ai-duration').value);
+        var resultsEl = qs('ai-schedule-results');
+        
+        var slots = [];
+        var parts = slotsInput.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+        for (var i = 0; i < parts.length; i++) {
+            var times = parts[i].split('-').map(function(t) { return t.trim(); });
+            if (times.length === 2) {
+                var start = parseTime(times[0]), end = parseTime(times[1]);
+                if (start !== null && end !== null && start < end) {
+                    var count = Math.floor((end - start) / duration);
+                    if (count > 0) slots.push({ start: start, end: end, count: count });
+                }
+            }
+        }
+        
+        if (!slots.length) {
+            resultsEl.innerHTML = '<div class="schedule-empty">Enter valid time slots (e.g. 9:00-10:30)</div>';
+            return;
+        }
+        
+        var pending = tasks.filter(function(t) { return !t.completed; });
+        pending.sort(function(a, b) {
+            if (a.dueDate && b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
+            if (a.dueDate) return -1;
+            if (b.dueDate) return 1;
+            return 0;
+        });
+        
+        var schedule = [];
+        var taskIdx = 0;
+        for (var s = 0; s < slots.length && taskIdx < pending.length; s++) {
+            var slot = slots[s];
+            var currentTime = slot.start;
+            for (var c = 0; c < slot.count && taskIdx < pending.length; c++) {
+                var task = pending[taskIdx];
+                var endTime = currentTime + duration;
+                schedule.push({ 
+                    task: task, 
+                    timeRange: formatTime(currentTime) + ' - ' + formatTime(endTime), 
+                    startMinutes: currentTime 
+                });
+                currentTime = endTime;
+                taskIdx++;
+            }
+        }
+        
+        if (!schedule.length) {
+            resultsEl.innerHTML = '<div class="schedule-empty">No pending tasks to schedule</div>';
+            return;
+        }
+        
+        var leftover = pending.length - schedule.length;
+        var html = '<div class="schedule-list">';
+        schedule.forEach(function(item) {
+            var priority = item.task.dueDate ? 
+                'Due ' + new Date(item.task.dueDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 
+                'Flexible';
+            html += '<div class="schedule-item"><div class="sched-time">' + item.timeRange + '</div><div class="sched-title">' + escapeHtml(item.task.title) + '</div><div class="sched-priority">' + priority + '</div></div>';
+        });
+        html += '</div>';
+        if (leftover > 0) {
+            html += '<div style="margin-top:8px;font-size:12px;color:var(--text-secondary)">' + leftover + ' task(s) not scheduled. Add more time slots.</div>';
+        }
+        resultsEl.innerHTML = html;
+        toast('Schedule generated for ' + schedule.length + ' tasks', 'success');
+    });
+
+    // ============ INIT ============
+    initDatabase().then(function() {
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                currentUser = user;
+                qs('header-user').textContent = user.email;
+                showApp();
+                loadAll().then(function() { navigate('dashboard'); });
+            } else {
+                currentUser = null;
+                showAuth();
+            }
+        });
+    }).catch(function(err) {
+        console.error('DB init error:', err);
+        toast('Failed to initialize database. Please refresh.', 'error');
+    });
+
+})();
+</script>
+</body>
+</html>
