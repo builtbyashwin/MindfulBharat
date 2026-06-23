@@ -13,11 +13,6 @@ A wellness companion app with task management, mood tracking, and mental health 
 - **Dark Mode** -- Toggleable theme, persisted to localStorage, defaults to system preference
 - **Responsive** -- Mobile-friendly layout with collapsible navigation
 
-## Getting Started
-
-1. Copy `config.example.js` to `config.js`
-2. Fill in your Firebase project credentials in `config.js`
-3. Open `index.html` in a browser
 
 ## Tech Stack
 
