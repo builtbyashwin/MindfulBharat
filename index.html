@@ -1796,19 +1796,20 @@ input,button{font-family:inherit}
     }
 
     // ============ AI SCHEDULE (GROQ) ============
-    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || (typeof process !== 'undefined' && process.env && process.env.GROQ_API_KEY);
+    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || 'process.env.GROQ_API_KEY';
+
+    function hasValidKey() { return GROQ_API_KEY && GROQ_API_KEY !== 'process.env.GROQ_API_KEY'; }
 
     function showApiKeyInput() {
-        var section = qs('schedule-api-section');
-        section.style.display = 'block';
-        if (GROQ_API_KEY) qs('schedule-api-key').value = GROQ_API_KEY;
+        qs('schedule-api-section').style.display = 'block';
+        if (hasValidKey()) qs('schedule-api-key').value = GROQ_API_KEY;
     }
 
     function aiSchedule() {
         var input = qs('schedule-tasks-input').value.trim();
         if (!input) { toast('Enter some tasks first', 'error'); return; }
 
-        if (!GROQ_API_KEY) {
+        if (!hasValidKey()) {
             showApiKeyInput();
             toast('Enter your Groq API key first', 'error');
             return;
@@ -1892,7 +1893,7 @@ input,button{font-family:inherit}
 
     qs('schedule-generate-btn').addEventListener('click', generateSchedule);
     qs('schedule-ai-btn').addEventListener('click', function() {
-        if (!GROQ_API_KEY) { showApiKeyInput(); return; }
+        if (!hasValidKey()) { showApiKeyInput(); return; }
         aiSchedule();
     });
     qs('schedule-api-save-btn').addEventListener('click', function() {
