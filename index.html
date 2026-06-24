@@ -25,6 +25,10 @@ input,button{font-family:inherit}
 .auth-box .field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
 .auth-box .field input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px;transition:border-color .2s}
 .auth-box .field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.pw-wrap{position:relative;display:flex;align-items:center}
+.pw-wrap input{flex:1;padding-right:60px!important}
+.pw-toggle{position:absolute;right:4px;background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;padding:6px 10px;border-radius:4px;transition:background .15s}
+.pw-toggle:hover{background:var(--primary-light)}
 .auth-box .btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:15px;transition:background .2s;margin-top:4px}
 .auth-box .btn:hover{background:var(--primary-hover)}
 .auth-box .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
@@ -232,14 +236,14 @@ input,button{font-family:inherit}
 
         <div id="login-view">
             <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"></div>
-            <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="Enter your password"></div>
+            <div class="field"><label>Password</label><div class="pw-wrap"><input type="password" id="login-password" placeholder="Enter your password"><button class="pw-toggle" data-target="login-password">Show</button></div></div>
             <button class="btn" id="login-btn">Login</button>
             <div class="switch-link">Don't have an account? <a id="switch-to-signup">Sign up</a></div>
         </div>
 
         <div id="signup-view" style="display:none">
             <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com"></div>
-            <div class="field"><label>Password</label><input type="password" id="signup-password" placeholder="Min 6 characters" minlength="6"></div>
+            <div class="field"><label>Password</label><div class="pw-wrap"><input type="password" id="signup-password" placeholder="Min 6 characters" minlength="6"><button class="pw-toggle" data-target="signup-password">Show</button></div></div>
             <button class="btn" id="signup-btn">Create Account</button>
             <div class="switch-link">Already have an account? <a id="switch-to-login">Login</a></div>
         </div>
@@ -445,6 +449,7 @@ input,button{font-family:inherit}
     };
     firebase.initializeApp(firebaseConfig);
     var auth = firebase.auth();
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
     // ============ STATE ============
     var currentUser = null;
@@ -999,6 +1004,15 @@ input,button{font-family:inherit}
         hideMessages();
     });
     
+    document.querySelectorAll('.pw-toggle').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var inp = document.getElementById(this.dataset.target);
+            var isPw = inp.type === 'password';
+            inp.type = isPw ? 'text' : 'password';
+            this.textContent = isPw ? 'Hide' : 'Show';
+        });
+    });
+
     qs('switch-to-login').addEventListener('click', function(e) {
         e.preventDefault();
         qs('login-view').style.display = 'block';
