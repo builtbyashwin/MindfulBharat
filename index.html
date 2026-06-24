@@ -1782,7 +1782,7 @@ input,button{font-family:inherit}
     }
 
     // ============ AI SCHEDULE (GROQ) ============
-    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || (typeof process !== 'undefined' && process.env && process.env.GROQ_API_KEY) || '';
+    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || (typeof process !== 'undefined' && process.env && process.env.GROQ_API_KEY);
 
     function showApiKeyInput() {
         var section = qs('schedule-api-section');
