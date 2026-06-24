@@ -1,0 +1,10 @@
+{
+  "name": "Mindful Bharat",
+  "short_name": "MindfulBharat",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f0fdfa",
+  "theme_color": "#0f766e",
+  "description": "Your wellness companion for mindfulness, mood tracking, and mental health resources.",
+  "icons": []
+}

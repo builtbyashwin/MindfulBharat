@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f766e">
+<title>Mindful Bharat</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#0f766e;--primary-hover:#0d9488;--primary-light:#ccfbf1;--bg:#f0fdfa;--surface:#ffffff;--text:#0f172a;--text-secondary:#475569;--border:#cbd5e1;--success:#16a34a;--danger:#dc2626;--danger-bg:#fee2e2;--danger-text:#991b1b;--radius:12px;--radius-sm:6px;--shadow:0 4px 16px rgba(0,0,0,0.06);--shadow-hover:0 8px 30px rgba(0,0,0,0.08)}
+[data-theme=dark]{--primary:#2dd4bf;--primary-light:#134e4a;--bg:#0f172a;--surface:#1e293b;--text:#e2e8f0;--text-secondary:#94a3b8;--border:#334155}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+input,button{font-family:inherit}
+.hidden{display:none!important}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:var(--radius);background:var(--text);color:var(--bg);font-size:14px;font-weight:500;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
+#toast.show{opacity:1}
+#toast.error{background:var(--danger);color:#fff}
+#toast.success{background:var(--success);color:#fff}
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,var(--bg),var(--primary-light))}
+.auth-box{width:100%;max-width:400px;background:var(--surface);border-radius:var(--radius);padding:36px 32px;box-shadow:var(--shadow-hover);border:1px solid var(--border)}
+.auth-box h1{font-size:28px;font-weight:800;color:var(--primary);text-align:center}
+.auth-box .subtitle{text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:24px}
+.auth-box .field{margin-bottom:14px}
+.auth-box .field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.auth-box .field input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px;transition:border-color .2s}
+.auth-box .field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.auth-box .btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:15px;transition:background .2s;margin-top:4px}
+.auth-box .btn:hover{background:var(--primary-hover)}
+.auth-box .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.auth-box .switch-link{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:14px}
+.auth-box .switch-link a{color:var(--primary);text-decoration:none;font-weight:600;cursor:pointer}
+.auth-box .switch-link a:hover{text-decoration:underline}
+.auth-error{background:var(--danger-bg);color:var(--danger-text);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;display:none;margin-bottom:14px}
+.auth-success{background:#dcfce7;color:#166534;padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;display:none;margin-bottom:14px}
+.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.header-inner{max-width:1024px;margin:0 auto;display:flex;align-items:center;height:60px;gap:16px}
+.header-brand{font-size:18px;font-weight:800;color:var(--primary);white-space:nowrap;flex-shrink:0;margin-right:4px}
+.header-nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;justify-content:center}
+.header-nav::-webkit-scrollbar{display:none}
+.nav-link{padding:5px 12px;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;background:none;transition:all .2s;position:relative}
+.nav-link:hover{background:var(--surface-hover,var(--surface));color:var(--text)}
+.nav-link.active{background:var(--primary-light);color:var(--primary);font-weight:700;box-shadow:inset 0 -2px 0 var(--primary)}
+.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.header-user{font-size:12px;color:var(--text-secondary);font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.theme-toggle{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px}
+.btn-secondary{padding:5px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-weight:600;font-size:12px}
+.btn-secondary:hover{background:var(--surface);border-color:var(--text-secondary)}
+.mobile-menu-btn{display:none;width:34px;height:34px;border:none;background:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.mobile-menu-btn span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px}
+.app-main{max-width:1024px;margin:0 auto;padding:28px 20px}
+.page{display:none;animation:fadeIn .3s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-size:18px;font-weight:700;margin-bottom:16px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.stat-card .stat-value{font-size:32px;font-weight:800;color:var(--primary)}
+.stat-card .stat-label{font-size:13px;color:var(--text-secondary);margin-top:4px;font-weight:500}
+.planner-header{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.planner-input{display:flex;gap:8px;flex-wrap:wrap}
+.planner-input input{flex:1;min-width:160px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px}
+.planner-input input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.planner-input input[type=date]{min-width:130px;flex:0 1 auto}
+.btn-primary{background:var(--primary);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:14px;transition:background .2s}
+.btn-primary:hover{background:var(--primary-hover)}
+.planner-filters{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;color:var(--text-secondary);font-weight:500;transition:all .2s}
+.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border);transition:box-shadow .2s}
+.task-item:hover{box-shadow:var(--shadow-hover)}
+.task-item.completed .task-title{text-decoration:line-through;color:var(--text-secondary)}
+.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;background:none;padding:0;flex-shrink:0;transition:all .2s}
+.task-check:hover{border-color:var(--primary)}
+.task-check.checked{background:var(--success);border-color:var(--success)}
+.task-check.checked::after{content:'';width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
+.task-info{flex:1}
+.task-title{font-weight:600;font-size:14px}
+.task-meta{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.task-delete{width:30px;height:30px;border:none;background:none;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:18px;transition:all .2s}
+.task-delete:hover{background:var(--danger-bg);color:var(--danger)}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-secondary);font-size:14px}
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.mood-btn{padding:20px 12px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);cursor:pointer;text-align:center;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--shadow);transition:all .2s}
+.mood-btn:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.mood-btn.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+.mood-btn .mood-icon{font-size:28px;display:block;margin-bottom:4px}
+.mood-today{margin-bottom:24px;background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.mood-today h3{font-size:16px;font-weight:600;margin-bottom:12px}
+.mood-week{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:12px 0 4px}
+.mood-day{width:64px;text-align:center}
+.mood-day .day-name{font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;text-transform:uppercase}
+.mood-day .day-block{width:48px;height:48px;border-radius:var(--radius);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:var(--surface);border:2px dashed var(--border);color:var(--text-secondary)}
+.mood-day .day-block.happy{background:#dcfce7;color:#166534;border:2px solid var(--success)}
+.mood-day .day-block.neutral{background:var(--primary-light);color:var(--primary);border:2px solid var(--primary)}
+.mood-day .day-block.stressed{background:var(--danger-bg);color:var(--danger-text);border:2px solid var(--danger)}
+.mood-day .day-date{font-size:10px;color:var(--text-secondary);margin-top:3px;font-weight:500}
+.help-search{margin-bottom:20px}
+.help-search input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);outline:none;font-size:14px;box-shadow:var(--shadow)}
+.help-search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.help-category{margin-bottom:24px}
+.help-category h3{font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:3px solid var(--primary-light);color:var(--primary)}
+.help-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.help-card{background:var(--surface);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.help-card h4{font-size:15px;font-weight:600;margin-bottom:4px}
+.help-card .help-phone{font-size:14px;color:var(--primary);font-weight:600;margin-bottom:3px}
+.help-card .help-phone a{color:var(--primary);text-decoration:none}
+.help-card .help-website{font-size:12px;color:var(--text-secondary);margin-bottom:3px}
+.help-card .help-desc{font-size:12px;color:var(--text-secondary)}
+.schedule-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.schedule-item{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--primary)}
+.schedule-item .sched-time{font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;min-width:100px}
+.schedule-item .sched-title{font-size:13px;flex:1;font-weight:500}
+.schedule-item .sched-priority{font-size:10px;padding:2px 10px;border-radius:12px;background:var(--primary-light);color:var(--primary);font-weight:600}
+.schedule-empty{text-align:center;padding:30px 20px;color:var(--text-secondary);font-size:13px}
+@media(max-width:820px){.auth-box{padding:28px 20px;border:none;box-shadow:none}.stats-grid{grid-template-columns:1fr}.mood-grid{gap:8px}.mood-btn{padding:14px 8px}.mood-btn .mood-icon{font-size:22px}.mood-day{width:52px}.mood-day .day-block{width:40px;height:40px;font-size:15px}.header-nav{position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);flex-direction:column;padding:10px 14px;display:none;z-index:99;overflow-x:visible;scrollbar-width:auto;box-shadow:0 8px 24px rgba(0,0,0,.08)}.header-nav.open{display:flex}.nav-link{width:100%;padding:10px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm)}.mobile-menu-btn{display:flex}.header-user{display:none}.help-cards{grid-template-columns:1fr}.app-main{padding:20px 14px}}
+@media(min-width:821px){.mobile-menu-btn{display:none!important}.header-nav{display:flex!important}}
+
+/* === NEW: Breathing Exercise === */
+.breathe-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0}
+.breathe-circle-wrap{position:relative;width:220px;height:220px;margin:0 auto 24px}
+.breathe-circle{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,var(--primary),#38bdf8);transition:transform 19s ease-in-out;display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(15,118,110,.3)}
+.breathe-circle.paused{transition:none!important}
+.breathe-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:700;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.2);pointer-events:none;width:160px}
+.breathe-phase{font-size:13px;font-weight:600;color:var(--text-secondary);text-align:center;margin-bottom:12px;min-height:20px}
+.breathe-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.breathe-btn{padding:10px 24px;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:14px;cursor:pointer;transition:background .2s;color:#fff}
+.breathe-btn.primary{background:var(--primary)}
+.breathe-btn.primary:hover{background:var(--primary-hover)}
+.breathe-btn.secondary{background:var(--surface);color:var(--text);border:1.5px solid var(--border)}
+.breathe-btn.secondary:hover{border-color:var(--primary)}
+.breathe-counter{font-size:14px;color:var(--text-secondary);text-align:center;margin-top:12px;font-weight:500}
+
+/* === NEW: Journal === */
+.journal-form{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px}
+.journal-form textarea{width:100%;min-height:100px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px;resize:vertical;font-family:inherit}
+.journal-form textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.journal-form .journal-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
+.journal-entries{display:flex;flex-direction:column;gap:8px}
+.journal-entry{background:var(--surface);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--primary)}
+.journal-entry .journal-date{font-size:11px;font-weight:600;color:var(--primary);margin-bottom:4px}
+.journal-entry .journal-text{font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap}
+
+/* === NEW: Gamification === */
+.points-bar{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px}
+.points-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#38bdf8);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:#fff}
+.points-info{flex:1}
+.points-value{font-size:28px;font-weight:800;color:var(--primary)}
+.points-label{font-size:12px;color:var(--text-secondary)}
+.badges-section h3{font-size:15px;font-weight:700;margin-bottom:10px}
+.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.badge-card{background:var(--surface);border-radius:var(--radius);padding:14px 8px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);transition:transform .2s}
+.badge-card.unlocked{border-color:var(--primary)}
+.badge-card.locked{opacity:.4}
+.badge-card .badge-icon{font-size:26px;display:block;margin-bottom:4px}
+.badge-card .badge-name{font-size:11px;font-weight:600;color:var(--text)}
+.badge-card .badge-desc{font-size:10px;color:var(--text-secondary);margin-top:2px}
+.affirmation-card{background:linear-gradient(135deg,var(--primary),#0d9488);border-radius:var(--radius);padding:20px 24px;color:#fff;margin-bottom:20px;box-shadow:var(--shadow-hover)}
+.affirmation-card .affirmation-text{font-size:18px;font-weight:600;line-height:1.5;text-align:center}
+.affirmation-card .affirmation-author{font-size:12px;opacity:.8;text-align:center;margin-top:8px}
+
+/* === NEW: Export Button === */
+.export-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.export-btn{padding:8px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-weight:500;font-size:12px;transition:all .2s}
+.export-btn:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+
+/* === NEW: Pomodoro === */
+.pomodoro-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0}
+.pomodoro-mode{font-size:14px;font-weight:700;color:var(--primary);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
+.pomodoro-timer{font-size:72px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;line-height:1;margin-bottom:8px}
+.pomodoro-timer.break{color:var(--primary)}
+.pomodoro-progress{width:200px;height:6px;background:var(--border);border-radius:3px;margin-bottom:20px;overflow:hidden}
+.pomodoro-progress-bar{height:100%;background:var(--primary);border-radius:3px;transition:width 1s linear;width:100%}
+.pomodoro-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.pomodoro-sessions{font-size:13px;color:var(--text-secondary);text-align:center;margin-top:14px}
+.pomodoro-presets{display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
+.pomodoro-preset{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;color:var(--text-secondary);font-weight:500;transition:all .2s}
+.pomodoro-preset.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.pomodoro-preset:hover{border-color:var(--primary)}
+@media(max-width:640px){.pomodoro-timer{font-size:56px}}
+
+/* === NEW: Smart Schedule === */
+.schedule-input-area{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.schedule-input-area textarea{width:100%;min-height:140px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px;resize:vertical;font-family:inherit}
+.schedule-input-area textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
+.schedule-input-area .schedule-hint{font-size:12px;color:var(--text-secondary);margin-top:-4px}
+.schedule-options{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.schedule-options input[type=text]{flex:1;min-width:160px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px}
+.schedule-options input[type=text]:focus{border-color:var(--primary)}
+.schedule-timeline{padding:8px 0}
+.schedule-timeline .tl-row{display:flex;align-items:stretch;gap:0;margin-bottom:2px;min-height:44px}
+.schedule-timeline .tl-time{width:80px;flex-shrink:0;font-size:11px;font-weight:600;color:var(--text-secondary);padding:8px 8px 8px 0;text-align:right;border-right:2px solid var(--border);position:relative}
+.schedule-timeline .tl-time::after{content:'';position:absolute;right:-5px;top:50%;width:8px;height:8px;border-radius:50%;background:var(--border);transform:translateY(-50%)}
+.schedule-timeline .tl-block{flex:1;margin-left:16px;padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.schedule-timeline .tl-block.work{background:var(--primary-light);color:var(--primary);border-left:4px solid var(--primary)}
+.schedule-timeline .tl-block.break{background:var(--danger-bg);color:var(--danger-text);border-left:4px solid var(--danger)}
+.schedule-timeline .tl-block.free{background:var(--surface);color:var(--text-secondary);border:1.5px dashed var(--border);font-style:italic}
+.schedule-timeline .tl-block .tl-dur{font-size:11px;opacity:.7;white-space:nowrap}
+.schedule-empty-state{text-align:center;padding:30px 20px;color:var(--text-secondary);font-size:13px}
+.schedule-loading{text-align:center;padding:30px;color:var(--text-secondary);font-size:14px}
+.schedule-loading .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.schedule-error{padding:14px 18px;background:var(--danger-bg);color:var(--danger-text);border-radius:var(--radius-sm);font-size:13px;margin-top:8px}
+@media(max-width:640px){.schedule-timeline .tl-time{width:60px;font-size:10px}.schedule-timeline .tl-block{font-size:12px;padding:6px 10px}}
+
+/* === NEW: Stress Alert Modal === */
+.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
+.modal-box{background:var(--surface);border-radius:var(--radius);padding:32px 28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center;border:1px solid var(--border);animation:scaleIn .3s ease}
+@keyframes scaleIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-icon{font-size:48px;display:block;margin-bottom:12px}
+.modal-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
+.modal-desc{font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:20px}
+.modal-btn{padding:10px 28px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:14px;transition:background .2s}
+.modal-btn:hover{background:var(--primary-hover)}
+
+@media(max-width:640px){.badges-grid{grid-template-columns:repeat(3,1fr)}.points-bar{padding:12px 16px}.points-value{font-size:22px}.breathe-circle-wrap{width:160px;height:160px}.breathe-text{font-size:15px;width:130px}}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div id="app">
+
+<div id="auth-screen">
+    <div class="auth-box">
+        <h1>Mindful Bharat</h1>
+        <p class="subtitle">Your wellness companion</p>
+        
+        <div id="auth-error" class="auth-error"></div>
+        <div id="auth-success" class="auth-success"></div>
+
+        <div id="login-view">
+            <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="you@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="login-password" placeholder="Enter your password"></div>
+            <button class="btn" id="login-btn">Login</button>
+            <div class="switch-link">Don't have an account? <a id="switch-to-signup">Sign up</a></div>
+        </div>
+
+        <div id="signup-view" style="display:none">
+            <div class="field"><label>Email</label><input type="email" id="signup-email" placeholder="you@example.com"></div>
+            <div class="field"><label>Password</label><input type="password" id="signup-password" placeholder="Min 6 characters" minlength="6"></div>
+            <button class="btn" id="signup-btn">Create Account</button>
+            <div class="switch-link">Already have an account? <a id="switch-to-login">Login</a></div>
+        </div>
+
+    </div>
+</div>
+
+<div id="app-screen" class="hidden">
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="header-brand">Mindful Bharat</div>
+            <nav class="header-nav" id="main-nav">
+                <button class="nav-link active" data-page="dashboard">Dashboard</button>
+                <button class="nav-link" data-page="planner">Planner</button>
+                <button class="nav-link" data-page="mood">Mood</button>
+                <button class="nav-link" data-page="breathe">Breathe</button>
+                <button class="nav-link" data-page="pomodoro">Pomodoro</button>
+                <button class="nav-link" data-page="schedule">Schedule</button>
+                <button class="nav-link" data-page="journal">Journal</button>
+                <button class="nav-link" data-page="help">Help</button>
+            </nav>
+            <div class="header-actions">
+                <span class="header-user" id="header-user"></span>
+                <button class="theme-toggle" id="theme-toggle">D</button>
+                <button class="btn-secondary" id="logout-btn">Logout</button>
+                <button class="mobile-menu-btn" id="mobile-menu-btn"><span></span><span></span><span></span></button>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section id="page-dashboard" class="page active">
+            <h2 class="section-title">Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-value" id="stat-tasks">0</div><div class="stat-label">Tasks</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-moods">0</div><div class="stat-label">Moods</div></div>
+                <div class="stat-card"><div class="stat-value" id="stat-streak">0</div><div class="stat-label">Day Streak</div></div>
+            </div>
+
+            <div class="affirmation-card" id="affirmation-card">
+                <div class="affirmation-text" id="affirmation-text">Take a deep breath. You are exactly where you need to be.</div>
+                <div class="affirmation-author" id="affirmation-author"></div>
+            </div>
+
+            <div class="points-bar">
+                <div class="points-icon">&#9733;</div>
+                <div class="points-info">
+                    <div class="points-value" id="points-display">0</div>
+                    <div class="points-label">Wellness Points</div>
+                </div>
+            </div>
+
+            <div class="badges-section">
+                <h3>Badges</h3>
+                <div class="badges-grid" id="badges-grid"></div>
+            </div>
+
+            <div class="export-bar">
+                <button class="export-btn" data-export="tasks">Export Tasks</button>
+                <button class="export-btn" data-export="moods">Export Moods</button>
+                <button class="export-btn" data-export="journal">Export Journal</button>
+                <button class="export-btn" data-export="all">Export All</button>
+            </div>
+        </section>
+
+        <section id="page-planner" class="page">
+            <h2 class="section-title">Planner</h2>
+            <div class="planner-header">
+                <div class="planner-input">
+                    <input type="text" id="task-input" placeholder="Add a task...">
+                    <input type="date" id="task-date">
+                    <button class="btn-primary" id="task-add-btn">Add</button>
+                </div>
+                <div class="planner-filters">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="pending">Pending</button>
+                    <button class="filter-btn" data-filter="completed">Done</button>
+                </div>
+            </div>
+            <div id="task-list" class="task-list"></div>
+
+            <div style="margin-top:28px;border-top:2px solid var(--border);padding-top:20px">
+                <h3 class="section-title">AI Schedule</h3>
+                <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">Enter free time slots to schedule tasks</p>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+                    <input type="text" id="ai-free-slots" placeholder="9:00-10:30, 14:00-16:00" style="flex:1;min-width:180px;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px">
+                    <select id="ai-duration" style="padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px">
+                        <option value="15">15 min</option>
+                        <option value="30" selected>30 min</option>
+                        <option value="45">45 min</option>
+                        <option value="60">60 min</option>
+                    </select>
+                    <button class="btn-primary" id="ai-schedule-btn" style="padding:8px 16px;font-size:13px">Generate</button>
+                </div>
+                <div id="ai-schedule-results"></div>
+            </div>
+        </section>
+
+        <section id="page-mood" class="page">
+            <h2 class="section-title">Mood Tracker</h2>
+            <div class="mood-today">
+                <h3>How are you feeling today?</h3>
+                <div class="mood-grid" id="mood-select">
+                    <button class="mood-btn" data-mood="happy">Happy</button>
+                    <button class="mood-btn" data-mood="neutral">Neutral</button>
+                    <button class="mood-btn" data-mood="stressed">Stressed</button>
+                </div>
+            </div>
+            <h3 class="section-title">Last 7 Days</h3>
+            <div class="mood-week" id="mood-week"></div>
+        </section>
+
+        <section id="page-breathe" class="page">
+            <h2 class="section-title">Breathing Exercise</h2>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">4-7-8 breathing: Inhale 4s &middot; Hold 7s &middot; Exhale 8s</p>
+            <div class="breathe-wrap">
+                <div class="breathe-circle-wrap">
+                    <div class="breathe-circle" id="breathe-circle">
+                        <div class="breathe-text" id="breathe-text">Press Start</div>
+                    </div>
+                </div>
+                <div class="breathe-phase" id="breathe-phase"></div>
+                <div class="breathe-counter" id="breathe-counter">Cycles: 0</div>
+                <div class="breathe-controls">
+                    <button class="breathe-btn primary" id="breathe-start-btn">Start</button>
+                    <button class="breathe-btn secondary" id="breathe-reset-btn">Reset</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="page-pomodoro" class="page">
+            <h2 class="section-title">Pomodoro Timer</h2>
+            <div class="pomodoro-wrap">
+                <div class="pomodoro-mode" id="pomodoro-mode">Focus</div>
+                <div class="pomodoro-timer" id="pomodoro-timer">25:00</div>
+                <div class="pomodoro-progress"><div class="pomodoro-progress-bar" id="pomodoro-bar"></div></div>
+                <div class="pomodoro-presets">
+                    <button class="pomodoro-preset active" data-minutes="25">25 min</button>
+                    <button class="pomodoro-preset" data-minutes="15">15 min</button>
+                    <button class="pomodoro-preset" data-minutes="45">45 min</button>
+                </div>
+                <div class="pomodoro-controls">
+                    <button class="btn-primary" id="pomodoro-start-btn">Start</button>
+                    <button class="btn-secondary" id="pomodoro-reset-btn">Reset</button>
+                </div>
+                <div class="pomodoro-sessions" id="pomodoro-sessions">Sessions: 0</div>
+            </div>
+        </section>
+
+        <section id="page-schedule" class="page">
+            <h2 class="section-title">Smart Schedule</h2>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px">Paste your tasks below. The AI will organize them into a timeline for your day (India time).</p>
+            <div class="schedule-input-area">
+                <textarea id="schedule-tasks-input" placeholder="Write your tasks (one per line):&#10;Morning meditation&#10;Review PR (45m)&#10;Team standup&#10;Work on project report (1h)&#10;Lunch break"></textarea>
+                <div class="schedule-hint">Tip: Add <strong>HH:MM</strong> for a fixed time (e.g. <em>9:00 Meeting</em>) or <strong>(N m/h)</strong> for duration (e.g. <em>Task (30m)</em>).</div>
+                <div class="schedule-options">
+                    <button class="btn-primary" id="schedule-ai-btn">AI Organize</button>
+                    <button class="btn-secondary" id="schedule-generate-btn" style="font-size:12px">Quick Sort</button>
+                </div>
+                <div id="schedule-api-section" style="margin-top:8px;display:none">
+                    <div style="display:flex;gap:8px;align-items:center">
+                        <input type="password" id="schedule-api-key" placeholder="Enter your Groq API key" style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:12px">
+                        <button class="btn-secondary" id="schedule-api-save-btn" style="font-size:11px">Save</button>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">Get a free key at <a href="https://console.groq.com" target="_blank" style="color:var(--primary)">console.groq.com</a>. Key stored locally.</div>
+                </div>
+            </div>
+            <div id="schedule-timeline-results"></div>
+        </section>
+
+        <section id="page-journal" class="page">
+            <h2 class="section-title">Wellness Journal</h2>
+            <div class="journal-form">
+                <textarea id="journal-input" placeholder="Write your thoughts for today..." maxlength="2000"></textarea>
+                <div class="journal-actions">
+                    <button class="btn-primary" id="journal-save-btn">Save Entry</button>
+                </div>
+            </div>
+            <h3 class="section-title">Recent Entries</h3>
+            <div class="journal-entries" id="journal-list"></div>
+        </section>
+
+        <section id="page-help" class="page">
+            <h2 class="section-title">Help Hub</h2>
+            <div class="help-search"><input type="text" id="help-search-input" placeholder="Search helplines..."></div>
+            <div id="help-results"></div>
+        </section>
+    </main>
+</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
+<script>
+(function() {
+    var firebaseConfig = {
+        apiKey: "AIzaSyDXhqnrDiK8Ag86LEg9ktDdfJ9WjdBPwXI",
+        authDomain: "chat-app-3fc2a.firebaseapp.com",
+        projectId: "chat-app-3fc2a",
+        storageBucket: "chat-app-3fc2a.firebasestorage.app",
+        messagingSenderId: "774830345170",
+        appId: "1:774830345170:web:2711b8a3457019df3ad60b"
+    };
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+
+    // ============ STATE ============
+    var currentUser = null;
+    var currentPage = 'dashboard';
+    var tasks = [], moods = [], helplines = [], journals = [];
+    var filterMode = 'all';
+    var todayMood = null;
+    var db = null;
+    var dbReady = false;
+    var gamificationData = null;
+    var breatheInterval = null, breatheRunning = false, breatheCycle = 0, breathePhase = 'idle';
+    var BADGE_DEFS = [
+        { id:'first-task', name:'First Step', desc:'Complete 1 task', icon:'\u{2B50}', check:function(s){return s.tasksDone>=1} },
+        { id:'task-10', name:'Task Master', desc:'Complete 10 tasks', icon:'\u{1F3C6}', check:function(s){return s.tasksDone>=10} },
+        { id:'mood-7', name:'Mood Tracker', desc:'Log 7 moods', icon:'\u{1F4CA}', check:function(s){return s.totalMoods>=7} },
+        { id:'streak-7', name:'Week Warrior', desc:'7-day streak', icon:'\u{1F525}', check:function(s){return s.streak>=7} },
+        { id:'streak-30', name:'Consistent', desc:'30-day streak', icon:'\u{1F4AA}', check:function(s){return s.streak>=30} },
+        { id:'journal-3', name:'Reflective', desc:'Write 3 journal entries', icon:'\u{1F4DD}', check:function(s){return s.journalCount>=3} },
+        { id:'journal-10', name:'Diarist', desc:'Write 10 journal entries', icon:'\u{1F4D6}', check:function(s){return s.journalCount>=10} },
+        { id:'all-moods', name:'Balanced', desc:'Logged all 3 moods', icon:'\u{1F9D0}', check:function(s){return s.moodVariety>=3} }
+    ];
+    var AFFIRMATIONS = [
+        { text:'Take a deep breath. You are exactly where you need to be.', author:'Mindful Bharat' },
+        { text:'Your mind is your greatest asset — nurture it daily.', author:'Mindful Bharat' },
+        { text:'Every moment is a fresh beginning.', author:'T.S. Eliot' },
+        { text:'Be where your feet are.', author:'Zen Proverb' },
+        { text:'You don\'t have to be positive all the time. It\'s perfectly okay to feel sad, angry, annoyed, frustrated, scared and anxious.', author:'Lori Deschene' },
+        { text:'Almost everything will work again if you unplug it for a few minutes — including you.', author:'Anne Lamott' },
+        { text:'The greatest weapon against stress is our ability to choose one thought over another.', author:'William James' },
+        { text:'Self-care is not selfish. You cannot serve from an empty vessel.', author:'Eleanor Brown' },
+        { text:'Peace begins with a smile.', author:'Mother Teresa' },
+        { text:'In the middle of difficulty lies opportunity.', author:'Albert Einstein' },
+        { text:'You are stronger than you think, more loved than you know, and more capable than you imagine.', author:'Mindful Bharat' },
+        { text:'The only way to do great work is to love what you do.', author:'Steve Jobs' },
+        { text:'Breathe. It\'s just a bad day, not a bad life.', author:'Unknown' },
+        { text:'Small steps lead to big changes. Keep going.', author:'Mindful Bharat' },
+        { text:'Your present circumstances don\'t determine where you can go; they merely determine where you start.', author:'Nido Qubein' }
+    ];
+
+    // ============ HELPERS ============
+    function qs(id) { return document.getElementById(id); }
+    
+    function toast(msg, type) {
+        var el = qs('toast');
+        el.textContent = msg;
+        el.className = type || '';
+        el.classList.add('show');
+        clearTimeout(el._timer);
+        el._timer = setTimeout(function() { el.classList.remove('show'); }, 3000);
+    }
+    
+    function escapeHtml(str) {
+        var d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+    
+    function getUserId() { return currentUser ? currentUser.email : null; }
+    
+    // ============ UI HELPERS ============
+    function showError(msg) {
+        var el = qs('auth-error');
+        el.textContent = msg;
+        el.style.display = 'block';
+        qs('auth-success').style.display = 'none';
+    }
+    
+    function showSuccess(msg) {
+        var el = qs('auth-success');
+        el.textContent = msg;
+        el.style.display = 'block';
+        qs('auth-error').style.display = 'none';
+    }
+    
+    function hideMessages() {
+        qs('auth-error').style.display = 'none';
+        qs('auth-success').style.display = 'none';
+    }
+
+    // ============ INDEXEDDB ============
+    var DB_NAME = 'MindfulBharat', DB_VERSION = 5;
+    
+    function initDatabase() {
+        return new Promise(function(resolve, reject) {
+            var req = indexedDB.open(DB_NAME, DB_VERSION);
+            
+            req.onupgradeneeded = function(e) {
+                var d = e.target.result;
+                var oldV = e.oldVersion;
+                console.log('Migrating database from v' + oldV + '...');
+                
+                if (!d.objectStoreNames.contains('tasks')) {
+                    var ts = d.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
+                    ts.createIndex('userId', 'userId', { unique: false });
+                    console.log('Created tasks store');
+                }
+                
+                if (!d.objectStoreNames.contains('moods')) {
+                    var ms = d.createObjectStore('moods', { keyPath: 'id', autoIncrement: true });
+                    ms.createIndex('userId', 'userId', { unique: false });
+                    ms.createIndex('date', 'date', { unique: false });
+                    console.log('Created moods store');
+                }
+                
+                if (!d.objectStoreNames.contains('helplines')) {
+                    var hs = d.createObjectStore('helplines', { keyPath: 'id', autoIncrement: true });
+                    hs.createIndex('category', 'category', { unique: false });
+                    console.log('Created helplines store');
+                } else if (oldV < 5) {
+                    var hs = req.transaction.objectStore('helplines');
+                    hs.clear();
+                    console.log('Re-seeding helplines...');
+                }
+                
+                var hs = req.transaction.objectStore('helplines');
+                var data = [
+                    { category: 'Mental Health', name: 'Vandrevala Foundation', phone: '1860-266-2345', description: '24/7 mental health helpline', website: 'vandrevalafoundation.com' },
+                    { category: 'Mental Health', name: 'iCall Helpline', phone: '022-25521111', description: 'Free counselling', website: 'icallhelpline.org' },
+                    { category: 'Mental Health', name: 'Snehi Foundation', phone: '011-41036474', description: 'Emotional support', website: 'snehifoundation.org' },
+                    { category: 'Mental Health', name: 'Sumaitri', phone: '011-23389090', description: 'Emotional support (Mon-Sat 2-8PM)', website: 'sumaitri.org' },
+                    { category: 'Mental Health', name: 'Parivarthan', phone: '080-55554444', description: 'Counselling helpline (Mon-Fri 10AM-6PM)', website: 'parivarthan.org' },
+                    { category: 'Mental Health', name: 'Fortis Mental Health', phone: '8376804102', description: 'Mental health support', website: 'fortishealthcare.com' },
+                    { category: 'Mental Health', name: 'COOJ Mental Health', phone: '0832-2252525', description: 'Mental health support (Goa)', website: 'cooj.org' },
+                    { category: 'Mental Health', name: 'Lifeline Foundation', phone: '033-40447437', description: 'Emotional support (Kolkata)', website: 'lifelinefoundation.in' },
+                    { category: 'Mental Health', name: 'Roshni', phone: '040-66202000', description: 'Counselling (Hyderabad, 11AM-9PM)', website: 'roshnicounselling.com' },
+                    { category: 'Mental Health', name: 'Sahai', phone: '080-25497777', description: 'Emotional support (Bangalore, 10AM-8PM)', website: 'sahaifoundation.com' },
+                    { category: 'Mental Health', name: 'Maithri', phone: '0484-2540530', description: 'Counselling (Kochi, 10AM-6PM)', website: 'maithrikochi.org' },
+                    { category: 'Mental Health', name: 'Samaritans Mumbai', phone: '022-23094545', description: 'Emotional support (Mon-Fri 5-8PM)', website: 'samaritansmumbai.com' },
+                    { category: 'Crisis', name: 'KIRAN Helpline', phone: '1800-599-0019', description: '24/7 crisis support (Ministry of Social Justice)', website: 'kirannationalhelpline.in' },
+                    { category: 'Crisis', name: 'AASRA', phone: '9820466726', description: '24/7 suicide prevention', website: 'aasra.info' },
+                    { category: 'Crisis', name: 'S.A.A.S. Helpline', phone: '1800-123-4321', description: 'Suicide prevention', website: 'saashelpline.org' },
+                    { category: 'Crisis', name: 'Jeevan Aastha', phone: '1800-233-3330', description: 'Crisis intervention', website: 'jeevanaastha.in' },
+                    { category: 'Crisis', name: 'Connecting India', phone: '1800-209-4353', description: 'Mental health & crisis support', website: 'connectingindia.org' },
+                    { category: 'Crisis', name: 'Sukoon Health', phone: '1800-120-8200', description: '24/7 mental health crisis', website: 'sukoonhealth.com' },
+                    { category: 'Women & Child', name: 'Women\'s Helpline', phone: '181', description: 'National women\'s distress helpline', website: 'wcd.nic.in' },
+                    { category: 'Women & Child', name: 'Child Helpline', phone: '1098', description: '24/7 child protection (CHILDLINE)', website: 'childlineindia.org.in' },
+                    { category: 'Women & Child', name: 'Domestic Violence', phone: '1800-102-2900', description: 'Domestic violence support', website: 'ncw.nic.in' },
+                    { category: 'Women & Child', name: 'National Commission for Women', phone: '7827170170', description: 'Women\'s rights & complaints', website: 'ncw.nic.in' },
+                    { category: 'Women & Child', name: 'Shakti Shalini', phone: '10920', description: 'Women\'s crisis support', website: 'shaktishalini.org' },
+                    { category: 'Women & Child', name: 'RAHI Foundation', phone: '011-47194900', description: 'Recovery from sexual abuse', website: 'rahifoundation.org' },
+                    { category: 'Medical', name: 'National Emergency', phone: '112', description: 'All-in-one emergency (police/fire/ambulance)' },
+                    { category: 'Medical', name: 'Ambulance', phone: '108', description: 'Emergency ambulance (most states)' },
+                    { category: 'Medical', name: 'National Health Helpline', phone: '1800-180-1104', description: 'Health information & support (Ministry of Health)' },
+                    { category: 'Medical', name: 'Poison Helpline', phone: '011-26593655', description: '24/7 poison information (AIIMS Delhi)' },
+                    { category: 'Medical', name: 'Quit Tobacco', phone: '1800-11-2356', description: 'Tobacco cessation support' },
+                    { category: 'General', name: 'Senior Citizens Helpline', phone: '14567', description: 'Elder care support (Elder Line)', website: 'elderline.nic.in' },
+                    { category: 'General', name: 'Tourist Helpline', phone: '1363', description: '24/7 tourist assistance (Ministry of Tourism)' },
+                    { category: 'General', name: 'Railway Helpline', phone: '139', description: 'Railway enquiries & assistance (Indian Railways)' },
+                    { category: 'General', name: 'Anti-Corruption', phone: '1800-11-8800', description: 'Anti-corruption helpline (CVC)' },
+                    { category: 'General', name: 'Election Helpline', phone: '1950', description: 'Voter assistance (Election Commission)' },
+                    { category: 'General', name: 'LPG Leak / Emergency', phone: '1906', description: 'Gas leak emergency helpline' }
+                ];
+                data.forEach(function(h) { hs.add(h); });
+                
+                if (!d.objectStoreNames.contains('journal')) {
+                    var js = d.createObjectStore('journal', { keyPath: 'id', autoIncrement: true });
+                    js.createIndex('userId', 'userId', { unique: false });
+                    js.createIndex('date', 'date', { unique: false });
+                    console.log('Created journal store');
+                }
+                
+                if (!d.objectStoreNames.contains('gamification')) {
+                    d.createObjectStore('gamification', { keyPath: 'userId' });
+                    console.log('Created gamification store');
+                }
+            };
+            
+            req.onsuccess = function(e) { 
+                db = e.target.result; 
+                dbReady = true; 
+                console.log('Database ready');
+                resolve(); 
+            };
+            
+            req.onerror = function(e) { 
+                console.error('Database error:', e.target.error);
+                reject(e.target.error); 
+            };
+        });
+    }
+
+    function dbAdd(store, data) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var tx = db.transaction(store, 'readwrite');
+            var req = tx.objectStore(store).add(data);
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbGet(store, key) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var req = db.transaction(store, 'readonly').objectStore(store).get(key);
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbGetAll(store, idx, val) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var storeObj = db.transaction(store, 'readonly').objectStore(store);
+            var req = idx ? storeObj.index(idx).getAll(val) : storeObj.getAll();
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbUpdate(store, key, data) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var req = db.transaction(store, 'readwrite').objectStore(store).put(data);
+            req.onsuccess = function() { resolve(req.result); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+    
+    function dbDelete(store, key) {
+        return new Promise(function(resolve, reject) {
+            if (!dbReady || !db) { reject('DB not ready'); return; }
+            var req = db.transaction(store, 'readwrite').objectStore(store).delete(key);
+            req.onsuccess = function() { resolve(); };
+            req.onerror = function() { reject(req.error); };
+        });
+    }
+
+    // ============ AUTH FUNCTIONS ============
+    function signup(email, password) {
+        return auth.createUserWithEmailAndPassword(email, password)
+            .then(function(cred) {
+                return { success: true, user: cred.user };
+            })
+            .catch(function(error) {
+                return { error: error.message };
+            });
+    }
+
+    function login(email, password) {
+        return auth.signInWithEmailAndPassword(email, password)
+            .then(function(cred) {
+                return { success: true, user: cred.user };
+            })
+            .catch(function(error) {
+                return { error: error.message };
+            });
+    }
+
+    function logout() {
+        return auth.signOut();
+    }
+
+    // ============ DATA FUNCTIONS ============
+    function loadTasks() {
+        var uid = getUserId();
+        if (!uid) return Promise.resolve([]);
+        return dbGetAll('tasks', 'userId', uid).then(function(r) {
+            tasks = r.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+            return tasks;
+        }).catch(function() { tasks = []; return tasks; });
+    }
+    
+    function loadMoods() {
+        var uid = getUserId();
+        if (!uid) return Promise.resolve([]);
+        return dbGetAll('moods', 'userId', uid).then(function(r) {
+            moods = r.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+            return moods;
+        }).catch(function() { moods = []; return moods; });
+    }
+    
+    function loadHelplines() {
+        return dbGetAll('helplines').then(function(r) {
+            helplines = r.sort(function(a, b) { return a.category.localeCompare(b.category); });
+            return helplines;
+        }).catch(function() { helplines = []; return helplines; });
+    }
+    
+    function loadJournals() {
+        var uid = getUserId();
+        if (!uid) return Promise.resolve([]);
+        return dbGetAll('journal', 'userId', uid).then(function(r) {
+            journals = r.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+            return journals;
+        }).catch(function() { journals = []; return journals; });
+    }
+    
+    function loadGamification() {
+        var uid = getUserId();
+        if (!uid) return Promise.resolve(null);
+        return dbGet('gamification', uid).then(function(r) {
+            gamificationData = r;
+            return r;
+        }).catch(function() { gamificationData = null; return null; });
+    }
+    
+    function loadAll() { return Promise.all([loadTasks(), loadMoods(), loadHelplines(), loadJournals(), loadGamification()]); }
+
+    function addTask(title, dueDate) {
+        if (!getUserId()) { toast('Login first', 'error'); return; }
+        var task = { 
+            userId: getUserId(), 
+            title: title, 
+            completed: false, 
+            dueDate: dueDate || null, 
+            createdAt: new Date().toISOString() 
+        };
+        dbAdd('tasks', task).then(function(id) {
+            task.id = id;
+            tasks.unshift(task);
+            renderPlanner();
+            toast('Task added', 'success');
+        }).catch(function() { toast('Failed to add task', 'error'); });
+    }
+
+    function toggleTask(id, completed) {
+        var task = tasks.find(function(t) { return t.id === id; });
+        if (!task) return;
+        var updated = { ...task, completed: completed };
+        dbUpdate('tasks', id, updated).then(function() {
+            task.completed = completed;
+            renderPlanner();
+            if (completed) {
+                addPoints(10);
+                checkBadges();
+                renderDashboard();
+            }
+        }).catch(function() { toast('Failed to update', 'error'); });
+    }
+
+    function deleteTask(id) {
+        dbDelete('tasks', id).then(function() {
+            tasks = tasks.filter(function(t) { return t.id !== id; });
+            renderPlanner();
+            toast('Task deleted', 'success');
+        }).catch(function() { toast('Failed to delete', 'error'); });
+    }
+
+    function setMood(mood) {
+        if (!getUserId()) { toast('Login first', 'error'); return; }
+        var today = new Date().toISOString().split('T')[0];
+        var existing = moods.find(function(m) { return m.date === today; });
+        
+        if (existing) {
+            var updated = { ...existing, mood: mood };
+            dbUpdate('moods', existing.id, updated).then(function() {
+                existing.mood = mood;
+                todayMood = mood;
+                renderMood();
+                if (mood === 'stressed') checkStressStreak();
+                toast('Mood updated', 'success');
+            }).catch(function() { toast('Failed to update', 'error'); });
+        } else {
+            var entry = { 
+                userId: getUserId(), 
+                mood: mood, 
+                date: today, 
+                createdAt: new Date().toISOString() 
+            };
+            dbAdd('moods', entry).then(function(id) {
+                entry.id = id;
+                moods.unshift(entry);
+                todayMood = mood;
+                renderMood();
+                addPoints(5);
+                checkBadges();
+                renderDashboard();
+                if (mood === 'stressed') checkStressStreak();
+                toast('Mood logged', 'success');
+            }).catch(function() { toast('Failed to log', 'error'); });
+        }
+    }
+
+    function calcStreak() {
+        if (!moods.length) return 0;
+        var seen = {};
+        var dates = [];
+        moods.forEach(function(m) { 
+            if (!seen[m.date]) { 
+                seen[m.date] = true; 
+                dates.push(m.date); 
+            } 
+        });
+        dates.sort().reverse();
+        if (!dates.length) return 0;
+        
+        var today = new Date().toISOString().split('T')[0];
+        var check = new Date(today);
+        if (dates[0] !== today) {
+            var y = new Date();
+            y.setDate(y.getDate() - 1);
+            var yes = y.toISOString().split('T')[0];
+            if (dates[0] !== yes) return 0;
+            check = y;
+        }
+        
+        var streak = 0;
+        while (true) {
+            var d = check.toISOString().split('T')[0];
+            if (seen[d]) { 
+                streak++; 
+                check.setDate(check.getDate() - 1); 
+            } else break;
+        }
+        return streak;
+    }
+
+    // ============ RENDER FUNCTIONS ============
+    function renderDashboard() {
+        qs('stat-tasks').textContent = tasks.length;
+        qs('stat-moods').textContent = moods.length;
+        qs('stat-streak').textContent = calcStreak();
+        renderPoints();
+        renderBadges();
+        renderAffirmation();
+    }
+
+    function renderPlanner() {
+        var list = qs('task-list');
+        var filtered = tasks.filter(function(t) {
+            if (filterMode === 'all') return true;
+            if (filterMode === 'pending') return !t.completed;
+            if (filterMode === 'completed') return t.completed;
+            return true;
+        });
+        
+        if (!filtered.length) {
+            list.innerHTML = '<div class="empty-state">' + (filterMode === 'all' ? 'No tasks yet. Add one!' : 'No tasks match this filter.') + '</div>';
+            return;
+        }
+        
+        var html = '';
+        filtered.forEach(function(task) {
+            var dateStr = task.dueDate ? new Date(task.dueDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+            html += '<div class="task-item' + (task.completed ? ' completed' : '') + '">' +
+                '<button class="task-check' + (task.completed ? ' checked' : '') + '" data-id="' + task.id + '" data-completed="' + task.completed + '"></button>' +
+                '<div class="task-info"><div class="task-title">' + escapeHtml(task.title) + '</div>' +
+                (dateStr ? '<div class="task-meta">Due: ' + dateStr + '</div>' : '') + '</div>' +
+                '<button class="task-delete" data-id="' + task.id + '">&times;</button></div>';
+        });
+        list.innerHTML = html;
+        
+        list.querySelectorAll('.task-check').forEach(function(b) {
+            b.addEventListener('click', function() {
+                toggleTask(Number(b.dataset.id), b.dataset.completed === 'true' ? false : true);
+            });
+        });
+        list.querySelectorAll('.task-delete').forEach(function(b) {
+            b.addEventListener('click', function() { deleteTask(Number(b.dataset.id)); });
+        });
+    }
+
+    function renderMood() {
+        var today = new Date().toISOString().split('T')[0];
+        var existing = moods.find(function(m) { return m.date === today; });
+        todayMood = existing ? existing.mood : null;
+        
+        document.querySelectorAll('.mood-btn').forEach(function(b) {
+            b.classList.toggle('selected', b.dataset.mood === todayMood);
+        });
+        
+        var weekContainer = qs('mood-week');
+        var daysHtml = '';
+        for (var i = 6; i >= 0; i--) {
+            var d = new Date();
+            d.setDate(d.getDate() - i);
+            var dateStr = d.toISOString().split('T')[0];
+            var found = moods.find(function(m) { return m.date === dateStr; });
+            var mood = found ? found.mood : null;
+            var dayName = d.toLocaleDateString('en-IN', { weekday: 'short' });
+            var dayDate = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+            var cls = 'day-block' + (mood ? ' ' + mood : '');
+            var icon = mood === 'happy' ? 'H' : mood === 'neutral' ? 'N' : mood === 'stressed' ? 'S' : '';
+            daysHtml += '<div class="mood-day"><div class="day-name">' + dayName + '</div><div class="' + cls + '">' + icon + '</div><div class="day-date">' + dayDate + '</div></div>';
+        }
+        weekContainer.innerHTML = daysHtml;
+    }
+
+    function renderHelp() {
+        var query = qs('help-search-input').value.toLowerCase().trim();
+        var container = qs('help-results');
+        var filtered = helplines.filter(function(h) {
+            return !query || 
+                h.category.toLowerCase().indexOf(query) !== -1 || 
+                h.name.toLowerCase().indexOf(query) !== -1 || 
+                (h.description && h.description.toLowerCase().indexOf(query) !== -1);
+        });
+        
+        var grouped = {};
+        filtered.forEach(function(h) {
+            var cat = h.category || 'General';
+            if (!grouped[cat]) grouped[cat] = [];
+            grouped[cat].push(h);
+        });
+        
+        var cats = Object.keys(grouped);
+        if (!cats.length) { 
+            container.innerHTML = '<div class="empty-state">No helplines found</div>'; 
+            return; 
+        }
+        
+        var html = '';
+        cats.forEach(function(cat) {
+            var itemsHtml = '';
+            grouped[cat].forEach(function(h) {
+                itemsHtml += '<div class="help-card"><h4>' + escapeHtml(h.name) + '</h4>' +
+                    (h.phone ? '<div class="help-phone"><a href="tel:' + h.phone.replace(/\s/g, '') + '">' + escapeHtml(h.phone) + '</a></div>' : '') +
+                    (h.website ? '<div class="help-website">' + escapeHtml(h.website) + '</div>' : '') +
+                    (h.description ? '<div class="help-desc">' + escapeHtml(h.description) + '</div>' : '') + '</div>';
+            });
+            html += '<div class="help-category"><h3>' + escapeHtml(cat) + '</h3><div class="help-cards">' + itemsHtml + '</div></div>';
+        });
+        container.innerHTML = html;
+    }
+
+    function navigate(page) {
+        currentPage = page;
+        document.querySelectorAll('.nav-link').forEach(function(l) {
+            l.classList.toggle('active', l.dataset.page === page);
+        });
+        document.querySelectorAll('.page').forEach(function(p) {
+            p.classList.toggle('active', p.id === 'page-' + page);
+        });
+        if (page === 'dashboard') renderDashboard();
+        if (page === 'planner') renderPlanner();
+        if (page === 'mood') renderMood();
+        if (page === 'help') renderHelp();
+        if (page === 'breathe') { /* rendered via DOM, no-op */ }
+        if (page === 'pomodoro') { /* rendered via DOM, no-op */ }
+        if (page === 'schedule') { /* rendered via DOM, no-op */ }
+        if (page === 'journal') renderJournal();
+    }
+
+    function showApp() {
+        qs('auth-screen').classList.add('hidden');
+        qs('app-screen').classList.remove('hidden');
+    }
+    
+    function showAuth() {
+        qs('auth-screen').classList.remove('hidden');
+        qs('app-screen').classList.add('hidden');
+        qs('login-view').style.display = 'block';
+        qs('signup-view').style.display = 'none';
+    }
+
+    // ============ EVENTS ============
+    qs('switch-to-signup').addEventListener('click', function(e) {
+        e.preventDefault();
+        qs('login-view').style.display = 'none';
+        qs('signup-view').style.display = 'block';
+        hideMessages();
+    });
+    
+    qs('switch-to-login').addEventListener('click', function(e) {
+        e.preventDefault();
+        qs('login-view').style.display = 'block';
+        qs('signup-view').style.display = 'none';
+        hideMessages();
+    });
+
+    qs('signup-btn').addEventListener('click', function() {
+        var email = qs('signup-email').value.trim();
+        var password = qs('signup-password').value;
+        
+        if (!email || !password) {
+            toast('Fill all fields', 'error');
+            return;
+        }
+        if (password.length < 6) {
+            toast('Password must be 6+ characters', 'error');
+            return;
+        }
+        
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Creating...';
+        hideMessages();
+        
+        signup(email, password).then(function(result) {
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+            
+            if (result.error) {
+                if (result.error.indexOf('email-already-in-use') !== -1) {
+                    showError('Account already exists. Please login.');
+                } else {
+                    showError(getFirebaseErrorMessage(result.error));
+                }
+                return;
+            }
+            
+            if (result.success) {
+                toast('Account created! Welcome!', 'success');
+            }
+        }).catch(function(err) {
+            btn.disabled = false;
+            btn.textContent = 'Create Account';
+            console.error('Signup error:', err);
+            showError('Something went wrong: ' + (err.message || 'Unknown error'));
+        });
+    });
+
+    qs('login-btn').addEventListener('click', function() {
+        var email = qs('login-email').value.trim();
+        var password = qs('login-password').value;
+        
+        if (!email || !password) {
+            toast('Fill all fields', 'error');
+            return;
+        }
+        
+        var btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Logging in...';
+        hideMessages();
+        
+        login(email, password).then(function(result) {
+            btn.disabled = false;
+            btn.textContent = 'Login';
+            
+            if (result.error) {
+                showError(getFirebaseErrorMessage(result.error));
+                return;
+            }
+        }).catch(function(err) {
+            btn.disabled = false;
+            btn.textContent = 'Login';
+            console.error('Login error:', err);
+            showError('Something went wrong');
+        });
+    });
+
+    qs('login-password').addEventListener('keydown', function(e) { 
+        if (e.key === 'Enter') qs('login-btn').click(); 
+    });
+    qs('signup-password').addEventListener('keydown', function(e) { 
+        if (e.key === 'Enter') qs('signup-btn').click(); 
+    });
+
+    qs('logout-btn').addEventListener('click', function() {
+        logout();
+        toast('Logged out', 'success');
+    });
+
+    function getFirebaseErrorMessage(msg) {
+        if (msg.indexOf('user-not-found') !== -1) return 'No account found with this email';
+        if (msg.indexOf('wrong-password') !== -1) return 'Invalid password';
+        if (msg.indexOf('invalid-email') !== -1) return 'Invalid email address';
+        if (msg.indexOf('weak-password') !== -1) return 'Password should be at least 6 characters';
+        return msg;
+    }
+
+    document.querySelectorAll('.nav-link').forEach(function(link) {
+        link.addEventListener('click', function() {
+            navigate(link.dataset.page);
+            if (window.innerWidth <= 640) qs('main-nav').classList.remove('open');
+        });
+    });
+    
+    qs('mobile-menu-btn').addEventListener('click', function() {
+        qs('main-nav').classList.toggle('open');
+    });
+
+    qs('task-add-btn').addEventListener('click', function() {
+        var title = qs('task-input').value.trim();
+        if (!title) { 
+            toast('Enter a task title', 'error'); 
+            return; 
+        }
+        addTask(title, qs('task-date').value || null);
+        qs('task-input').value = '';
+        qs('task-date').value = '';
+    });
+    
+    qs('task-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') qs('task-add-btn').click();
+    });
+
+    document.querySelectorAll('.filter-btn').forEach(function(b) {
+        b.addEventListener('click', function() {
+            document.querySelectorAll('.filter-btn').forEach(function(f) { 
+                f.classList.remove('active'); 
+            });
+            b.classList.add('active');
+            filterMode = b.dataset.filter;
+            renderPlanner();
+        });
+    });
+
+    document.querySelectorAll('.mood-btn').forEach(function(b) {
+        b.addEventListener('click', function() {
+            setMood(b.dataset.mood);
+        });
+    });
+
+    qs('help-search-input').addEventListener('input', renderHelp);
+
+    var themeToggle = qs('theme-toggle');
+    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+    var darkMode = localStorage.getItem('theme');
+    if (!darkMode) darkMode = prefersDark.matches ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', darkMode);
+    themeToggle.textContent = darkMode === 'dark' ? 'L' : 'D';
+    
+    themeToggle.addEventListener('click', function() {
+        var cur = document.documentElement.getAttribute('data-theme');
+        var next = cur === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        themeToggle.textContent = next === 'dark' ? 'L' : 'D';
+    });
+
+    function parseTime(str) {
+        str = str.trim().toLowerCase();
+        var parts = str.split(':');
+        if (parts.length === 2) {
+            var h = parseInt(parts[0]), m = parseInt(parts[1]);
+            if (!isNaN(h) && !isNaN(m) && h >= 0 && h < 24 && m >= 0 && m < 60) return h * 60 + m;
+        }
+        return null;
+    }
+    
+    function formatTime(minutes) {
+        var h = Math.floor(minutes / 60), m = minutes % 60;
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+        return h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+    }
+    
+    qs('ai-schedule-btn').addEventListener('click', function() {
+        var slotsInput = qs('ai-free-slots').value.trim();
+        var duration = parseInt(qs('ai-duration').value);
+        var resultsEl = qs('ai-schedule-results');
+        
+        var slots = [];
+        var parts = slotsInput.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+        for (var i = 0; i < parts.length; i++) {
+            var times = parts[i].split('-').map(function(t) { return t.trim(); });
+            if (times.length === 2) {
+                var start = parseTime(times[0]), end = parseTime(times[1]);
+                if (start !== null && end !== null && start < end) {
+                    var count = Math.floor((end - start) / duration);
+                    if (count > 0) slots.push({ start: start, end: end, count: count });
+                }
+            }
+        }
+        
+        if (!slots.length) {
+            resultsEl.innerHTML = '<div class="schedule-empty">Enter valid time slots (e.g. 9:00-10:30)</div>';
+            return;
+        }
+        
+        var pending = tasks.filter(function(t) { return !t.completed; });
+        pending.sort(function(a, b) {
+            if (a.dueDate && b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
+            if (a.dueDate) return -1;
+            if (b.dueDate) return 1;
+            return 0;
+        });
+        
+        var schedule = [];
+        var taskIdx = 0;
+        for (var s = 0; s < slots.length && taskIdx < pending.length; s++) {
+            var slot = slots[s];
+            var currentTime = slot.start;
+            for (var c = 0; c < slot.count && taskIdx < pending.length; c++) {
+                var task = pending[taskIdx];
+                var endTime = currentTime + duration;
+                schedule.push({ 
+                    task: task, 
+                    timeRange: formatTime(currentTime) + ' - ' + formatTime(endTime), 
+                    startMinutes: currentTime 
+                });
+                currentTime = endTime;
+                taskIdx++;
+            }
+        }
+        
+        if (!schedule.length) {
+            resultsEl.innerHTML = '<div class="schedule-empty">No pending tasks to schedule</div>';
+            return;
+        }
+        
+        var leftover = pending.length - schedule.length;
+        var html = '<div class="schedule-list">';
+        schedule.forEach(function(item) {
+            var priority = item.task.dueDate ? 
+                'Due ' + new Date(item.task.dueDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 
+                'Flexible';
+            html += '<div class="schedule-item"><div class="sched-time">' + item.timeRange + '</div><div class="sched-title">' + escapeHtml(item.task.title) + '</div><div class="sched-priority">' + priority + '</div></div>';
+        });
+        html += '</div>';
+        if (leftover > 0) {
+            html += '<div style="margin-top:8px;font-size:12px;color:var(--text-secondary)">' + leftover + ' task(s) not scheduled. Add more time slots.</div>';
+        }
+        resultsEl.innerHTML = html;
+        toast('Schedule generated for ' + schedule.length + ' tasks', 'success');
+    });
+
+    // ============ JOURNAL FUNCTIONS ============
+    function saveJournal() {
+        var text = qs('journal-input').value.trim();
+        if (!text) { toast('Write something first', 'error'); return; }
+        var entry = {
+            userId: getUserId(),
+            text: text,
+            date: new Date().toISOString().split('T')[0],
+            createdAt: new Date().toISOString()
+        };
+        dbAdd('journal', entry).then(function(id) {
+            entry.id = id;
+            journals.unshift(entry);
+            qs('journal-input').value = '';
+            renderJournal();
+            addPoints(5);
+            toast('Entry saved', 'success');
+        }).catch(function() { toast('Failed to save', 'error'); });
+    }
+
+    function renderJournal() {
+        var list = qs('journal-list');
+        if (!journals.length) {
+            list.innerHTML = '<div class="empty-state">No journal entries yet. Start writing!</div>';
+            return;
+        }
+        var html = '';
+        journals.forEach(function(e) {
+            var d = new Date(e.createdAt);
+            var dateStr = d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            html += '<div class="journal-entry"><div class="journal-date">' + dateStr + '</div><div class="journal-text">' + escapeHtml(e.text) + '</div></div>';
+        });
+        list.innerHTML = html;
+    }
+
+    // ============ GAMIFICATION ============
+    function initGamificationIfNeeded() {
+        if (gamificationData) return Promise.resolve(gamificationData);
+        var uid = getUserId();
+        if (!uid) return Promise.resolve(null);
+        var data = { userId: uid, points: 0, badges: [] };
+        return dbAdd('gamification', data).then(function() {
+            gamificationData = data;
+            return data;
+        }).catch(function() { return null; });
+    }
+
+    function addPoints(amount) {
+        if (!gamificationData) return;
+        gamificationData.points += amount;
+        dbUpdate('gamification', gamificationData.userId, gamificationData).then(function() {
+            renderPoints();
+            checkBadges();
+        }).catch(function() {});
+    }
+
+    function getStats() {
+        var tasksDone = tasks.filter(function(t){ return t.completed; }).length;
+        var totalMoods = moods.length;
+        var streak = calcStreak();
+        var journalCount = journals.length;
+        var moodSet = {};
+        moods.forEach(function(m){ moodSet[m.mood] = true; });
+        var moodVariety = Object.keys(moodSet).length;
+        return { tasksDone: tasksDone, totalMoods: totalMoods, streak: streak, journalCount: journalCount, moodVariety: moodVariety };
+    }
+
+    function checkBadges() {
+        if (!gamificationData) return;
+        var stats = getStats();
+        var unlocked = gamificationData.badges || [];
+        var newlyUnlocked = [];
+        BADGE_DEFS.forEach(function(b) {
+            if (unlocked.indexOf(b.id) === -1 && b.check(stats)) {
+                unlocked.push(b.id);
+                newlyUnlocked.push(b);
+            }
+        });
+        if (newlyUnlocked.length) {
+            gamificationData.badges = unlocked;
+            dbUpdate('gamification', gamificationData.userId, gamificationData).then(function() {
+                renderBadges();
+                renderDashboard();
+                newlyUnlocked.forEach(function(b) {
+                    toast('Badge unlocked: ' + b.name + ' ' + b.icon, 'success');
+                });
+                confetti();
+            }).catch(function() {});
+        }
+    }
+
+    function renderPoints() {
+        qs('points-display').textContent = gamificationData ? gamificationData.points : 0;
+    }
+
+    function renderBadges() {
+        var grid = qs('badges-grid');
+        var unlocked = gamificationData ? (gamificationData.badges || []) : [];
+        var html = '';
+        BADGE_DEFS.forEach(function(b) {
+            var isUnlocked = unlocked.indexOf(b.id) !== -1;
+            html += '<div class="badge-card ' + (isUnlocked ? 'unlocked' : 'locked') + '"><span class="badge-icon">' + b.icon + '</span><div class="badge-name">' + b.name + '</div><div class="badge-desc">' + b.desc + '</div></div>';
+        });
+        grid.innerHTML = html;
+    }
+
+    // ============ CONFETTI ============
+    function confetti() {
+        var canvas = document.createElement('canvas');
+        canvas.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;z-index:9999';
+        document.body.appendChild(canvas);
+        var ctx = canvas.getContext('2d');
+        var W = canvas.width = window.innerWidth;
+        var H = canvas.height = window.innerHeight;
+        var colors = ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd','#1dd1a1','#ff6348'];
+        var pieces = [];
+        for (var i = 0; i < 150; i++) {
+            pieces.push({
+                x: Math.random() * W, y: Math.random() * H - H,
+                w: Math.random() * 10 + 5, h: Math.random() * 6 + 3,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vx: Math.random() * 4 - 2, vy: Math.random() * 3 + 2,
+                r: Math.random() * 360, rs: Math.random() * 10 - 5
+            });
+        }
+        var frames = 0;
+        function anim() {
+            ctx.clearRect(0, 0, W, H);
+            pieces.forEach(function(p) {
+                p.x += p.vx; p.y += p.vy; p.r += p.rs;
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.r * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+                ctx.restore();
+            });
+            frames++;
+            if (frames < 180) requestAnimationFrame(anim);
+            else canvas.remove();
+        }
+        anim();
+    }
+
+    // ============ BREATHING EXERCISE ============
+    var BREATHE_STEPS = [
+        { phase:'inhale', label:'Breathe in...', duration:4000, scale:1.6 },
+        { phase:'hold', label:'Hold...', duration:7000, scale:1.6 },
+        { phase:'exhale', label:'Breathe out...', duration:8000, scale:1 }
+    ];
+
+    function breatheStart() {
+        if (breatheRunning) return;
+        breatheRunning = true;
+        breatheCycle = 0;
+        qs('breathe-start-btn').textContent = 'Running...';
+        breatheStep(0);
+    }
+
+    function breatheStep(stepIndex) {
+        if (!breatheRunning) return;
+        var step = BREATHE_STEPS[stepIndex];
+        var circle = qs('breathe-circle');
+        var text = qs('breathe-text');
+        var phase = qs('breathe-phase');
+        
+        circle.classList.remove('paused');
+        circle.style.transition = 'transform ' + (step.duration/1000) + 's ease-in-out';
+        circle.style.transform = 'scale(' + step.scale + ')';
+        text.textContent = step.label;
+        phase.textContent = step.label;
+        
+        if (stepIndex === 2) {
+            breatheCycle++;
+            qs('breathe-counter').textContent = 'Cycles: ' + breatheCycle;
+        }
+        
+        breatheInterval = setTimeout(function() {
+            if (!breatheRunning) return;
+            if (stepIndex === 2) {
+                breatheStep(0);
+            } else {
+                breatheStep(stepIndex + 1);
+            }
+        }, step.duration);
+    }
+
+    function breatheStop() {
+        breatheRunning = false;
+        clearTimeout(breatheInterval);
+        var circle = qs('breathe-circle');
+        circle.classList.add('paused');
+        qs('breathe-start-btn').textContent = 'Resume';
+        qs('breathe-text').textContent = 'Paused';
+        qs('breathe-phase').textContent = '';
+    }
+
+    function breatheReset() {
+        breatheRunning = false;
+        clearTimeout(breatheInterval);
+        breatheCycle = 0;
+        var circle = qs('breathe-circle');
+        circle.classList.add('paused');
+        circle.style.transform = 'scale(1)';
+        qs('breathe-start-btn').textContent = 'Start';
+        qs('breathe-text').textContent = 'Press Start';
+        qs('breathe-phase').textContent = '';
+        qs('breathe-counter').textContent = 'Cycles: 0';
+    }
+
+    // ============ POMODORO TIMER ============
+    var pomodoroInterval = null, pomodoroRunning = false;
+    var pomodoroMinutes = 25, pomodoroSeconds = 25 * 60;
+    var pomodoroCurrent = 25 * 60, pomodoroSessions = 0;
+    var pomodoroMode = 'work';
+
+    function pomodoroSetDuration(minutes) {
+        if (pomodoroRunning) return;
+        pomodoroMinutes = minutes;
+        pomodoroSeconds = minutes * 60;
+        pomodoroCurrent = minutes * 60;
+        document.querySelectorAll('.pomodoro-preset').forEach(function(b) {
+            b.classList.toggle('active', parseInt(b.dataset.minutes) === minutes);
+        });
+        pomodoroUpdateDisplay();
+    }
+
+    function pomodoroUpdateDisplay() {
+        var m = Math.floor(pomodoroCurrent / 60);
+        var s = pomodoroCurrent % 60;
+        qs('pomodoro-timer').textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+        qs('pomodoro-timer').className = 'pomodoro-timer' + (pomodoroMode === 'break' ? ' break' : '');
+        var pct = (pomodoroCurrent / pomodoroSeconds) * 100;
+        qs('pomodoro-bar').style.width = pct + '%';
+    }
+
+    function pomodoroStart() {
+        if (pomodoroRunning) { pomodoroStop(); return; }
+        if (pomodoroCurrent <= 0) {
+            pomodoroCurrent = pomodoroSeconds;
+        }
+        pomodoroRunning = true;
+        qs('pomodoro-start-btn').textContent = 'Pause';
+        pomodoroInterval = setInterval(function() {
+            pomodoroCurrent--;
+            pomodoroUpdateDisplay();
+            if (pomodoroCurrent <= 0) {
+                clearInterval(pomodoroInterval);
+                pomodoroRunning = false;
+                qs('pomodoro-start-btn').textContent = 'Start';
+                if (pomodoroMode === 'work') {
+                    pomodoroSessions++;
+                    qs('pomodoro-sessions').textContent = 'Sessions: ' + pomodoroSessions;
+                    pomodoroMode = 'break';
+                    pomodoroMinutes = 5;
+                    pomodoroSeconds = 5 * 60;
+                    pomodoroCurrent = 5 * 60;
+                    qs('pomodoro-mode').textContent = 'Break';
+                    toast('Work session complete! Take a break.', 'success');
+                } else {
+                    pomodoroMode = 'work';
+                    pomodoroMinutes = parseInt(qs('pomodoro-preset.active') ? qs('pomodoro-preset.active').dataset.minutes : '25');
+                    pomodoroSeconds = pomodoroMinutes * 60;
+                    pomodoroCurrent = pomodoroMinutes * 60;
+                    qs('pomodoro-mode').textContent = 'Focus';
+                    toast('Break over! Time to focus.', 'success');
+                }
+                pomodoroUpdateDisplay();
+            }
+        }, 1000);
+    }
+
+    function pomodoroStop() {
+        clearInterval(pomodoroInterval);
+        pomodoroRunning = false;
+        qs('pomodoro-start-btn').textContent = 'Resume';
+    }
+
+    function pomodoroReset() {
+        clearInterval(pomodoroInterval);
+        pomodoroRunning = false;
+        pomodoroMode = 'work';
+        var activePreset = document.querySelector('.pomodoro-preset.active');
+        pomodoroMinutes = activePreset ? parseInt(activePreset.dataset.minutes) : 25;
+        pomodoroSeconds = pomodoroMinutes * 60;
+        pomodoroCurrent = pomodoroMinutes * 60;
+        qs('pomodoro-mode').textContent = 'Focus';
+        qs('pomodoro-start-btn').textContent = 'Start';
+        pomodoroUpdateDisplay();
+    }
+
+    // ============ STRESS ALERT ============
+    var STRESS_QUOTES = [
+        { msg:'You\'ve been feeling stressed lately. Remember to take deep breaths and give yourself a break.', icon:'\u{1F30A}' },
+        { msg:'Your well-being comes first. Step back, rest, and recharge.', icon:'\u{1F3A7}' },
+        { msg:'It\'s okay to not be okay. Take a moment for yourself today.', icon:'\u{1F49A}' },
+        { msg:'Stress is a sign your mind needs care. Try the breathing exercise or take a walk.', icon:'\u{1F33F}' },
+        { msg:'You are doing your best. Be kind to yourself and take a rest.', icon:'\u{1F31F}' },
+        { msg:'Your mental health matters more than anything. Pause and breathe.', icon:'\u{1F9E0}' }
+    ];
+
+    function checkStressStreak() {
+        var uid = getUserId();
+        if (!uid) return;
+        var sorted = moods.slice().sort(function(a, b) { return a.date < b.date ? 1 : -1; });
+        var streak = 0;
+        var checkDate = new Date();
+        for (var i = 0; i < sorted.length; i++) {
+            var d = checkDate.toISOString().split('T')[0];
+            var match = sorted.find(function(m) { return m.date === d; });
+            if (match && match.mood === 'stressed') {
+                streak++;
+                checkDate.setDate(checkDate.getDate() - 1);
+            } else {
+                break;
+            }
+        }
+        if (streak >= 2) {
+            var quote = STRESS_QUOTES[Math.floor(Math.random() * STRESS_QUOTES.length)];
+            showStressModal(quote, streak);
+        }
+    }
+
+    function showStressModal(quote, days) {
+        var existing = document.querySelector('.modal-overlay');
+        if (existing) existing.remove();
+        var overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.innerHTML = '<div class="modal-box"><span class="modal-icon">' + quote.icon + '</span><div class="modal-title">Take a moment</div><div class="modal-desc">You\'ve been stressed for ' + days + ' days in a row.<br><br>' + quote.msg + '</div><button class="modal-btn" id="modal-close-btn">I\'ll take care</button></div>';
+        document.body.appendChild(overlay);
+        qs('modal-close-btn').addEventListener('click', function() {
+            overlay.remove();
+            navigate('breathe');
+        });
+        overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) overlay.remove();
+        });
+    }
+
+    // ============ AFFIRMATIONS ============
+    function renderAffirmation() {
+        var idx = Math.floor(Math.random() * AFFIRMATIONS.length);
+        var aff = AFFIRMATIONS[idx];
+        qs('affirmation-text').textContent = aff.text;
+        qs('affirmation-author').textContent = aff.author ? '— ' + aff.author : '';
+    }
+
+    // ============ EXPORT DATA ============
+    function exportData(type) {
+        var data = {};
+        var filename;
+        if (type === 'tasks') {
+            data = tasks;
+            filename = 'mindful-bharat-tasks.json';
+        } else if (type === 'moods') {
+            data = moods;
+            filename = 'mindful-bharat-moods.json';
+        } else if (type === 'journal') {
+            data = journals;
+            filename = 'mindful-bharat-journal.json';
+        } else {
+            data = { tasks: tasks, moods: moods, journals: journals };
+            filename = 'mindful-bharat-all.json';
+        }
+        var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast('Data exported', 'success');
+    }
+
+    // ============ SMART SCHEDULE ============
+    function parseScheduleTask(line) {
+        line = line.trim();
+        if (!line) return null;
+        var fixedTime = null, duration = null, name = line;
+        
+        var timeMatch = line.match(/^(\d{1,2}):(\d{2})\s*(?:-|–)?\s*(.*)/);
+        if (timeMatch) {
+            var h = parseInt(timeMatch[1]), m = parseInt(timeMatch[2]);
+            if (h >= 0 && h < 24 && m >= 0 && m < 60) {
+                fixedTime = h * 60 + m;
+                name = timeMatch[3] || name;
+            }
+        }
+        
+        var durMatch = name.match(/\((\d+)\s*(m|min|h)\s*\)\s*$/i);
+        if (durMatch) {
+            var val = parseInt(durMatch[1]);
+            duration = durMatch[2].toLowerCase() === 'h' ? val * 60 : val;
+            name = name.replace(/\(\s*\d+\s*(m|min|h)\s*\)\s*$/i, '').trim();
+        }
+        
+        return { name: name || '(Untitled)', fixedTime: fixedTime, duration: duration };
+    }
+
+    function formatScheduleTime(minutes) {
+        var h = Math.floor(minutes / 60), m = minutes % 60;
+        var ampm = h >= 12 ? 'PM' : 'AM';
+        if (h > 12) h -= 12;
+        if (h === 0) h = 12;
+        return h + ':' + (m < 10 ? '0' : '') + m + ' ' + ampm;
+    }
+
+    function generateSchedule() {
+        var input = qs('schedule-tasks-input').value;
+        var defaultDur = 30;
+        var resultsEl = qs('schedule-timeline-results');
+        
+        var lines = input.split('\n').filter(function(l) { return l.trim(); });
+        var tasks = [];
+        lines.forEach(function(l) {
+            var t = parseScheduleTask(l);
+            if (t) tasks.push(t);
+        });
+        
+        if (!tasks.length) {
+            resultsEl.innerHTML = '<div class="schedule-empty-state">Enter at least one task</div>';
+            return;
+        }
+        
+        var slots = [];
+        if (slotsStr) {
+            var parts = slotsStr.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
+            parts.forEach(function(p) {
+                var times = p.split('-').map(function(t) { return t.trim(); });
+                if (times.length === 2) {
+                    var sH = parseInt(times[0].split(':')[0]), sM = parseInt(times[0].split(':')[1]) || 0;
+                    var eH = parseInt(times[1].split(':')[0]), eM = parseInt(times[1].split(':')[1]) || 0;
+                    var start = sH * 60 + sM, end = eH * 60 + eM;
+                    if (start < end) slots.push({ start: start, end: end });
+                }
+            });
+        }
+        
+        // Separate fixed-time and flexible tasks
+        var fixed = tasks.filter(function(t) { return t.fixedTime !== null; });
+        var flex = tasks.filter(function(t) { return t.fixedTime === null; });
+        
+        // Sort fixed by time, flex by name
+        fixed.sort(function(a, b) { return a.fixedTime - b.fixedTime; });
+        
+        // Build timeline blocks
+        var blocks = [];
+        
+        if (slots.length) {
+            // Use user-defined slots
+            slots.sort(function(a, b) { return a.start - b.start; });
+            
+            // Place fixed-time tasks first
+            var remainingFlex = flex.slice();
+            
+            slots.forEach(function(slot) {
+                var cursor = slot.start;
+                
+                // Place fixed tasks within this slot
+                fixed.forEach(function(task) {
+                    if (task._placed) return;
+                    if (task.fixedTime >= cursor && task.fixedTime < slot.end) {
+                        var dur = task.duration || defaultDur;
+                        var end = Math.min(task.fixedTime + dur, slot.end);
+                        if (task.fixedTime > cursor) {
+                            blocks.push({ time: cursor, end: cursor, name: 'Free', type: 'free', dur: task.fixedTime - cursor });
+                        }
+                        blocks.push({ time: task.fixedTime, end: end, name: task.name, type: 'work', dur: end - task.fixedTime });
+                        cursor = end;
+                        task._placed = true;
+                    }
+                });
+                
+                // Fill remaining with flexible tasks
+                for (var i = 0; i < remainingFlex.length; i++) {
+                    if (cursor >= slot.end) break;
+                    var task = remainingFlex[i];
+                    var dur = task.duration || defaultDur;
+                    var end = Math.min(cursor + dur, slot.end);
+                    if (end - cursor < 5) break;
+                    if (cursor > slot.start) {
+                        // Don't add a free block if cursor hasn't advanced
+                    }
+                    blocks.push({ time: cursor, end: end, name: task.name, type: 'work', dur: end - cursor });
+                    cursor = end;
+                    remainingFlex.splice(i, 1);
+                    i--;
+                }
+                
+                // Remaining free time in slot
+                if (cursor < slot.end) {
+                    blocks.push({ time: cursor, end: slot.end, name: 'Free', type: 'free', dur: slot.end - cursor });
+                }
+            });
+            
+            // Add remaining flex tasks as unscheduled
+            if (remainingFlex.length) {
+                blocks.push({ time: -1, end: -1, name: remainingFlex.length + ' task(s) not scheduled — add more time', type: 'unscheduled', dur: 0 });
+            }
+            
+        } else {
+            // No slots: just list fixed tasks, then flexible as unscheduled
+            fixed.forEach(function(task) {
+                var dur = task.duration || defaultDur;
+                blocks.push({ time: task.fixedTime, end: task.fixedTime + dur, name: task.name, type: 'work', dur: dur });
+            });
+            if (flex.length) {
+                blocks.push({ time: -1, end: -1, name: flex.length + ' flexible task(s) — enter time windows to schedule', type: 'unscheduled', dur: 0 });
+            }
+        }
+        
+        // Render
+        if (!blocks.length) {
+            resultsEl.innerHTML = '<div class="schedule-empty-state">No tasks to schedule</div>';
+            return;
+        }
+        
+        var html = '<div class="schedule-timeline">';
+        blocks.forEach(function(b) {
+            if (b.type === 'unscheduled') {
+                html += '<div style="padding:12px 0;font-size:13px;color:var(--text-secondary);text-align:center">' + b.name + '</div>';
+                return;
+            }
+            var timeStr = b.time >= 0 ? formatScheduleTime(b.time) : '';
+            var endStr = b.end >= 0 ? formatScheduleTime(b.end) : '';
+            var durStr = b.dur > 0 ? (b.dur >= 60 ? Math.round(b.dur/60*10)/10 + 'h' : b.dur + 'm') : '';
+            var cls = b.type === 'work' ? 'work' : b.type === 'free' ? 'free' : 'break';
+            var label = b.type === 'free' ? 'Free' : escapeHtml(b.name);
+            html += '<div class="tl-row"><div class="tl-time">' + timeStr + '</div><div class="tl-block ' + cls + '"><span>' + label + '</span>' + (durStr ? '<span class="tl-dur">' + durStr + '</span>' : '') + '</div></div>';
+        });
+        html += '</div>';
+        resultsEl.innerHTML = html;
+        toast('Schedule generated for ' + tasks.length + ' tasks', 'success');
+    }
+
+    // ============ AI SCHEDULE (GROQ) ============
+    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || (typeof process !== 'undefined' && process.env && process.env.GROQ_API_KEY) || '';
+
+    function showApiKeyInput() {
+        var section = qs('schedule-api-section');
+        section.style.display = 'block';
+        if (GROQ_API_KEY) qs('schedule-api-key').value = GROQ_API_KEY;
+    }
+
+    function aiSchedule() {
+        var input = qs('schedule-tasks-input').value.trim();
+        if (!input) { toast('Enter some tasks first', 'error'); return; }
+
+        if (!GROQ_API_KEY) {
+            showApiKeyInput();
+            toast('Enter your Groq API key first', 'error');
+            return;
+        }
+
+        var resultsEl = qs('schedule-timeline-results');
+        resultsEl.innerHTML = '<div class="schedule-loading"><div class="spinner"></div>AI is organizing your schedule...</div>';
+
+        var lines = input.split('\n').filter(function(l) { return l.trim(); });
+        var prompt = 'You are a smart scheduling assistant for India (IST, UTC+5:30). Organize these tasks into a logical time-based schedule for today starting from the current time. Tasks with specific times (like "9:00") should be placed at those times. Tasks with durations (like "(30m)") should use that duration. Tasks without times or durations should be fitted logically into free gaps. Consider natural order (e.g. morning tasks first, meals at appropriate times).\n\nTasks:\n' + input + '\n\nReturn ONLY a JSON array. Each item: { "name": "task name", "time": "HH:MM AM/PM start", "end": "HH:MM AM/PM end", "duration_minutes": number }. No other text.';
+
+        fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_API_KEY },
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile',
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.3,
+                max_tokens: 2000
+            })
+        }).then(function(resp) {
+            if (!resp.ok) {
+                if (resp.status === 401) { throw new Error('Invalid API key'); }
+                if (resp.status === 429) { throw new Error('Rate limited. Try again later.'); }
+                throw new Error('API error (' + resp.status + ')');
+            }
+            return resp.json();
+        }).then(function(data) {
+            var content = data.choices[0].message.content;
+            var json = content.trim();
+            if (json.startsWith('```')) {
+                json = json.replace(/```json?\n?/g, '').replace(/```/g, '').trim();
+            }
+            var schedule = JSON.parse(json);
+            if (!Array.isArray(schedule) || !schedule.length) throw new Error('No schedule returned');
+
+            var html = '<div class="schedule-timeline">';
+            schedule.forEach(function(item) {
+                var timeStr = item.time || '';
+                var endStr = item.end || '';
+                var durStr = item.duration_minutes ? (item.duration_minutes >= 60 ? Math.round(item.duration_minutes/60*10)/10 + 'h' : item.duration_minutes + 'm') : '';
+                html += '<div class="tl-row"><div class="tl-time">' + timeStr + (endStr ? '<br><span style="font-weight:400;font-size:10px">' + endStr + '</span>' : '') + '</div><div class="tl-block work"><span>' + escapeHtml(item.name) + '</span>' + (durStr ? '<span class="tl-dur">' + durStr + '</span>' : '') + '</div></div>';
+            });
+            html += '</div>';
+            resultsEl.innerHTML = html;
+            toast('AI schedule generated!', 'success');
+        }).catch(function(err) {
+            resultsEl.innerHTML = '<div class="schedule-error">' + escapeHtml(err.message || 'Failed to generate schedule') + '</div>';
+            toast('AI scheduling failed', 'error');
+        });
+    }
+
+    // ============ PWA ============
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js').catch(function() {});
+    }
+
+    // ============ NEW EVENT HANDLERS ============
+    qs('journal-save-btn').addEventListener('click', saveJournal);
+    qs('journal-input').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && e.ctrlKey) saveJournal();
+    });
+
+    qs('breathe-start-btn').addEventListener('click', function() {
+        if (breatheRunning) { breatheStop(); }
+        else { breatheStart(); }
+    });
+    qs('breathe-reset-btn').addEventListener('click', breatheReset);
+
+    document.querySelectorAll('[data-export]').forEach(function(b) {
+        b.addEventListener('click', function() { exportData(b.dataset.export); });
+    });
+
+    document.querySelectorAll('.pomodoro-preset').forEach(function(b) {
+        b.addEventListener('click', function() {
+            pomodoroSetDuration(parseInt(b.dataset.minutes));
+        });
+    });
+    qs('pomodoro-start-btn').addEventListener('click', pomodoroStart);
+    qs('pomodoro-reset-btn').addEventListener('click', pomodoroReset);
+
+    qs('schedule-generate-btn').addEventListener('click', generateSchedule);
+    qs('schedule-ai-btn').addEventListener('click', function() {
+        if (!GROQ_API_KEY) { showApiKeyInput(); return; }
+        aiSchedule();
+    });
+    qs('schedule-api-save-btn').addEventListener('click', function() {
+        var key = qs('schedule-api-key').value.trim();
+        if (!key) { toast('Enter an API key', 'error'); return; }
+        GROQ_API_KEY = key;
+        localStorage.setItem('groq_api_key', key);
+        qs('schedule-api-section').style.display = 'none';
+        toast('API key saved locally', 'success');
+        aiSchedule();
+    });
+
+    // ============ INIT ============
+    initDatabase().then(function() {
+        auth.onAuthStateChanged(function(user) {
+            if (user) {
+                currentUser = user;
+                qs('header-user').textContent = user.email;
+                showApp();
+                loadAll().then(function() {
+                    initGamificationIfNeeded().then(function() {
+                        renderPoints();
+                        renderBadges();
+                        renderAffirmation();
+                        navigate('dashboard');
+                    });
+                });
+            } else {
+                currentUser = null;
+                showAuth();
+            }
+        });
+    }).catch(function(err) {
+        console.error('DB init error:', err);
+        toast('Failed to initialize database. Please refresh.', 'error');
+    });
+
+})();
+</script>
+</body>
+</html>
