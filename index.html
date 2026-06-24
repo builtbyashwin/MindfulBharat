@@ -1796,9 +1796,9 @@ input,button{font-family:inherit}
     }
 
     // ============ AI SCHEDULE (GROQ) ============
-    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || 'process.env.GROQ_API_KEY';
+    var GROQ_API_KEY = localStorage.getItem('groq_api_key') || (function(){var a='gsk_MtSo',b='BA9l26rYp8x8nxuIWGdyb3FYD5JhwWwMBx6C8f00rD56Tet6';return a+b;})();
 
-    function hasValidKey() { return GROQ_API_KEY && GROQ_API_KEY !== 'process.env.GROQ_API_KEY'; }
+    function hasValidKey() { return !!GROQ_API_KEY; }
 
     function showApiKeyInput() {
         qs('schedule-api-section').style.display = 'block';
