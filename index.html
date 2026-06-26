@@ -4,221 +4,1620 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f766e">
+<meta name="theme-color" content="#b45309">
 <title>Mindful Bharat</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--primary:#0f766e;--primary-hover:#0d9488;--primary-light:#ccfbf1;--bg:#f0fdfa;--surface:#ffffff;--text:#0f172a;--text-secondary:#475569;--border:#cbd5e1;--success:#16a34a;--danger:#dc2626;--danger-bg:#fee2e2;--danger-text:#991b1b;--radius:12px;--radius-sm:6px;--shadow:0 4px 16px rgba(0,0,0,0.06);--shadow-hover:0 8px 30px rgba(0,0,0,0.08)}
-[data-theme=dark]{--primary:#2dd4bf;--primary-light:#134e4a;--bg:#0f172a;--surface:#1e293b;--text:#e2e8f0;--text-secondary:#94a3b8;--border:#334155}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
-input,button{font-family:inherit}
-.hidden{display:none!important}
-#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:var(--radius);background:var(--text);color:var(--bg);font-size:14px;font-weight:500;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;max-width:90vw}
-#toast.show{opacity:1}
-#toast.error{background:var(--danger);color:#fff}
-#toast.success{background:var(--success);color:#fff}
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;background:linear-gradient(135deg,var(--bg),var(--primary-light))}
-.auth-box{width:100%;max-width:400px;background:var(--surface);border-radius:var(--radius);padding:36px 32px;box-shadow:var(--shadow-hover);border:1px solid var(--border)}
-.auth-box h1{font-size:28px;font-weight:800;color:var(--primary);text-align:center}
-.auth-box .subtitle{text-align:center;color:var(--text-secondary);font-size:13px;margin-bottom:24px}
-.auth-box .field{margin-bottom:14px}
-.auth-box .field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
-.auth-box .field input{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px;transition:border-color .2s}
-.auth-box .field input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-.pw-wrap{position:relative;display:flex;align-items:center}
-.pw-wrap input{flex:1;padding-right:60px!important}
-.pw-toggle{position:absolute;right:4px;background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;padding:6px 10px;border-radius:4px;transition:background .15s}
-.pw-toggle:hover{background:var(--primary-light)}
-.auth-box .btn{width:100%;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:15px;transition:background .2s;margin-top:4px}
-.auth-box .btn:hover{background:var(--primary-hover)}
-.auth-box .btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
-.auth-box .switch-link{text-align:center;font-size:13px;color:var(--text-secondary);margin-top:14px}
-.auth-box .switch-link a{color:var(--primary);text-decoration:none;font-weight:600;cursor:pointer}
-.auth-box .switch-link a:hover{text-decoration:underline}
-.auth-error{background:var(--danger-bg);color:var(--danger-text);padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;display:none;margin-bottom:14px}
-.auth-success{background:#dcfce7;color:#166534;padding:10px 14px;border-radius:var(--radius-sm);font-size:13px;display:none;margin-bottom:14px}
-.app-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
-.header-inner{max-width:1024px;margin:0 auto;display:flex;align-items:center;height:60px;gap:16px}
-.header-brand{font-size:18px;font-weight:800;color:var(--primary);white-space:nowrap;flex-shrink:0;margin-right:4px}
-.header-nav{display:flex;gap:2px;flex:1;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;justify-content:center}
-.header-nav::-webkit-scrollbar{display:none}
-.nav-link{padding:5px 12px;border-radius:var(--radius-sm);color:var(--text-secondary);font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;background:none;transition:all .2s;position:relative}
-.nav-link:hover{background:var(--surface-hover,var(--surface));color:var(--text)}
-.nav-link.active{background:var(--primary-light);color:var(--primary);font-weight:700;box-shadow:inset 0 -2px 0 var(--primary)}
-.header-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.header-user{font-size:12px;color:var(--text-secondary);font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.theme-toggle{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:16px}
-.btn-secondary{padding:5px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-weight:600;font-size:12px}
-.btn-secondary:hover{background:var(--surface);border-color:var(--text-secondary)}
-.mobile-menu-btn{display:none;width:34px;height:34px;border:none;background:none;cursor:pointer;flex-direction:column;align-items:center;justify-content:center;gap:4px}
-.mobile-menu-btn span{display:block;width:18px;height:2px;background:var(--text);border-radius:2px}
-.app-main{max-width:1024px;margin:0 auto;padding:28px 20px}
-.page{display:none;animation:fadeIn .3s ease}
-.page.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.section-title{font-size:18px;font-weight:700;margin-bottom:16px}
-.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:28px}
-.stat-card{background:var(--surface);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.stat-card .stat-value{font-size:32px;font-weight:800;color:var(--primary)}
-.stat-card .stat-label{font-size:13px;color:var(--text-secondary);margin-top:4px;font-weight:500}
-.planner-header{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
-.planner-input{display:flex;gap:8px;flex-wrap:wrap}
-.planner-input input{flex:1;min-width:160px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px}
-.planner-input input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-.planner-input input[type=date]{min-width:130px;flex:0 1 auto}
-.btn-primary{background:var(--primary);color:#fff;border:none;padding:10px 20px;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:14px;transition:background .2s}
-.btn-primary:hover{background:var(--primary-hover)}
-.planner-filters{display:flex;gap:6px;flex-wrap:wrap}
-.filter-btn{padding:6px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;color:var(--text-secondary);font-weight:500;transition:all .2s}
-.filter-btn.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.task-list{display:flex;flex-direction:column;gap:8px}
-.task-item{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border);transition:box-shadow .2s}
-.task-item:hover{box-shadow:var(--shadow-hover)}
-.task-item.completed .task-title{text-decoration:line-through;color:var(--text-secondary)}
-.task-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;background:none;padding:0;flex-shrink:0;transition:all .2s}
-.task-check:hover{border-color:var(--primary)}
-.task-check.checked{background:var(--success);border-color:var(--success)}
-.task-check.checked::after{content:'';width:6px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);margin-top:-2px}
-.task-info{flex:1}
-.task-title{font-weight:600;font-size:14px}
-.task-meta{font-size:11px;color:var(--text-secondary);margin-top:2px}
-.task-delete{width:30px;height:30px;border:none;background:none;cursor:pointer;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);font-size:18px;transition:all .2s}
-.task-delete:hover{background:var(--danger-bg);color:var(--danger)}
-.empty-state{text-align:center;padding:40px 20px;color:var(--text-secondary);font-size:14px}
-.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
-.mood-btn{padding:20px 12px;border:2px solid var(--border);border-radius:var(--radius);background:var(--surface);cursor:pointer;text-align:center;font-size:14px;font-weight:600;color:var(--text);box-shadow:var(--shadow);transition:all .2s}
-.mood-btn:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
-.mood-btn.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
-.mood-btn .mood-icon{font-size:28px;display:block;margin-bottom:4px}
-.mood-today{margin-bottom:24px;background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.mood-today h3{font-size:16px;font-weight:600;margin-bottom:12px}
-.mood-week{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:12px 0 4px}
-.mood-day{width:64px;text-align:center}
-.mood-day .day-name{font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:4px;text-transform:uppercase}
-.mood-day .day-block{width:48px;height:48px;border-radius:var(--radius);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;background:var(--surface);border:2px dashed var(--border);color:var(--text-secondary)}
-.mood-day .day-block.happy{background:#dcfce7;color:#166534;border:2px solid var(--success)}
-.mood-day .day-block.neutral{background:var(--primary-light);color:var(--primary);border:2px solid var(--primary)}
-.mood-day .day-block.stressed{background:var(--danger-bg);color:var(--danger-text);border:2px solid var(--danger)}
-.mood-day .day-date{font-size:10px;color:var(--text-secondary);margin-top:3px;font-weight:500}
-.help-search{margin-bottom:20px}
-.help-search input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);outline:none;font-size:14px;box-shadow:var(--shadow)}
-.help-search input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-.help-category{margin-bottom:24px}
-.help-category h3{font-size:15px;font-weight:700;margin-bottom:12px;padding-bottom:8px;border-bottom:3px solid var(--primary-light);color:var(--primary)}
-.help-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-.help-card{background:var(--surface);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);border:1px solid var(--border)}
-.help-card h4{font-size:15px;font-weight:600;margin-bottom:4px}
-.help-card .help-phone{font-size:14px;color:var(--primary);font-weight:600;margin-bottom:3px}
-.help-card .help-phone a{color:var(--primary);text-decoration:none}
-.help-card .help-website{font-size:12px;color:var(--text-secondary);margin-bottom:3px}
-.help-card .help-desc{font-size:12px;color:var(--text-secondary)}
-.schedule-list{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-.schedule-item{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--primary)}
-.schedule-item .sched-time{font-size:12px;font-weight:700;color:var(--primary);white-space:nowrap;min-width:100px}
-.schedule-item .sched-title{font-size:13px;flex:1;font-weight:500}
-.schedule-item .sched-priority{font-size:10px;padding:2px 10px;border-radius:12px;background:var(--primary-light);color:var(--primary);font-weight:600}
-.schedule-empty{text-align:center;padding:30px 20px;color:var(--text-secondary);font-size:13px}
-@media(max-width:820px){.auth-box{padding:28px 20px;border:none;box-shadow:none}.stats-grid{grid-template-columns:1fr}.mood-grid{gap:8px}.mood-btn{padding:14px 8px}.mood-btn .mood-icon{font-size:22px}.mood-day{width:52px}.mood-day .day-block{width:40px;height:40px;font-size:15px}.header-nav{position:fixed;top:60px;left:0;right:0;background:var(--surface);border-bottom:1px solid var(--border);flex-direction:column;padding:10px 14px;display:none;z-index:99;overflow-x:visible;scrollbar-width:auto;box-shadow:0 8px 24px rgba(0,0,0,.08)}.header-nav.open{display:flex}.nav-link{width:100%;padding:10px 16px;font-size:13px;font-weight:600;border-radius:var(--radius-sm)}.mobile-menu-btn{display:flex}.header-user{display:none}.help-cards{grid-template-columns:1fr}.app-main{padding:20px 14px}}
-@media(min-width:821px){.mobile-menu-btn{display:none!important}.header-nav{display:flex!important}}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* === NEW: Breathing Exercise === */
-.breathe-wrap{display:flex;flex-direction:column;align-items:center;padding:20px 0}
-.breathe-circle-wrap{position:relative;width:220px;height:220px;margin:0 auto 24px}
-.breathe-circle{width:100%;height:100%;border-radius:50%;background:linear-gradient(135deg,var(--primary),#38bdf8);transition:transform 19s ease-in-out;display:flex;align-items:center;justify-content:center;box-shadow:0 0 60px rgba(15,118,110,.3)}
-.breathe-circle.paused{transition:none!important}
-.breathe-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;font-weight:700;color:#fff;text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.2);pointer-events:none;width:160px}
-.breathe-phase{font-size:13px;font-weight:600;color:var(--text-secondary);text-align:center;margin-bottom:12px;min-height:20px}
-.breathe-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.breathe-btn{padding:10px 24px;border:none;border-radius:var(--radius-sm);font-weight:600;font-size:14px;cursor:pointer;transition:background .2s;color:#fff}
-.breathe-btn.primary{background:var(--primary)}
-.breathe-btn.primary:hover{background:var(--primary-hover)}
-.breathe-btn.secondary{background:var(--surface);color:var(--text);border:1.5px solid var(--border)}
-.breathe-btn.secondary:hover{border-color:var(--primary)}
-.breathe-counter{font-size:14px;color:var(--text-secondary);text-align:center;margin-top:12px;font-weight:500}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-/* === NEW: Journal === */
-.journal-form{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:20px}
-.journal-form textarea{width:100%;min-height:100px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:14px;resize:vertical;font-family:inherit}
-.journal-form textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-.journal-form .journal-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
-.journal-entries{display:flex;flex-direction:column;gap:8px}
-.journal-entry{background:var(--surface);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);border:1px solid var(--border);border-left:4px solid var(--primary)}
-.journal-entry .journal-date{font-size:11px;font-weight:600;color:var(--primary);margin-bottom:4px}
-.journal-entry .journal-text{font-size:13px;color:var(--text);line-height:1.5;white-space:pre-wrap}
+:root {
+  --primary: #b45309;
+  --primary-light: #fef3c7;
+  --bg: #fffbeb;
+  --surface: #fff;
+  --text: #292524;
+  --text-dim: #78716c;
+  --border: #e7e5e4;
+  --success: #65a30d;
+  --success-bg: #ecfccb;
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.04);
+}
 
-/* === NEW: Gamification === */
-.points-bar{display:flex;align-items:center;gap:12px;background:var(--surface);border-radius:var(--radius);padding:16px 20px;box-shadow:var(--shadow);border:1px solid var(--border);margin-bottom:16px}
-.points-icon{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#38bdf8);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:#fff}
-.points-info{flex:1}
-.points-value{font-size:28px;font-weight:800;color:var(--primary)}
-.points-label{font-size:12px;color:var(--text-secondary)}
-.badges-section h3{font-size:15px;font-weight:700;margin-bottom:10px}
-.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
-.badge-card{background:var(--surface);border-radius:var(--radius);padding:14px 8px;text-align:center;box-shadow:var(--shadow);border:1px solid var(--border);transition:transform .2s}
-.badge-card.unlocked{border-color:var(--primary)}
-.badge-card.locked{opacity:.4}
-.badge-card .badge-icon{font-size:26px;display:block;margin-bottom:4px}
-.badge-card .badge-name{font-size:11px;font-weight:600;color:var(--text)}
-.badge-card .badge-desc{font-size:10px;color:var(--text-secondary);margin-top:2px}
-.affirmation-card{background:linear-gradient(135deg,var(--primary),#0d9488);border-radius:var(--radius);padding:20px 24px;color:#fff;margin-bottom:20px;box-shadow:var(--shadow-hover)}
-.affirmation-card .affirmation-text{font-size:18px;font-weight:600;line-height:1.5;text-align:center}
-.affirmation-card .affirmation-author{font-size:12px;opacity:.8;text-align:center;margin-top:8px}
+[data-theme=dark] {
+  --primary: #fbbf24;
+  --primary-light: #451a03;
+  --bg: #1c1917;
+  --surface: #292524;
+  --text: #e7e5e4;
+  --text-dim: #a8a29e;
+  --border: #44403c;
+  --shadow: 0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.15);
+}
 
-/* === NEW: Export Button === */
-.export-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
-.export-btn{padding:8px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);cursor:pointer;font-weight:500;font-size:12px;transition:all .2s}
-.export-btn:hover{border-color:var(--primary);background:var(--primary-light);color:var(--primary)}
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(180, 83, 9, 0.06) 0%, transparent 60%);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
-/* === NEW: Pomodoro === */
-.pomodoro-wrap{display:flex;flex-direction:column;align-items:center;padding:10px 0}
-.pomodoro-mode{font-size:14px;font-weight:700;color:var(--primary);text-align:center;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px}
-.pomodoro-timer{font-size:72px;font-weight:800;color:var(--text);font-variant-numeric:tabular-nums;line-height:1;margin-bottom:8px}
-.pomodoro-timer.break{color:var(--primary)}
-.pomodoro-progress{width:200px;height:6px;background:var(--border);border-radius:3px;margin-bottom:20px;overflow:hidden}
-.pomodoro-progress-bar{height:100%;background:var(--primary);border-radius:3px;transition:width 1s linear;width:100%}
-.pomodoro-controls{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.pomodoro-sessions{font-size:13px;color:var(--text-secondary);text-align:center;margin-top:14px}
-.pomodoro-presets{display:flex;gap:6px;justify-content:center;margin-bottom:16px;flex-wrap:wrap}
-.pomodoro-preset{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:12px;color:var(--text-secondary);font-weight:500;transition:all .2s}
-.pomodoro-preset.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.pomodoro-preset:hover{border-color:var(--primary)}
-@media(max-width:640px){.pomodoro-timer{font-size:56px}}
+[data-theme=dark] body {
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(251, 191, 36, 0.04) 0%, transparent 60%);
+}
 
-/* === NEW: Smart Schedule === */
-.schedule-input-area{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
-.schedule-input-area textarea{width:100%;min-height:140px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px;resize:vertical;font-family:inherit}
-.schedule-input-area textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-light)}
-.schedule-input-area .schedule-hint{font-size:12px;color:var(--text-secondary);margin-top:-4px}
-.schedule-options{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.schedule-options input[type=text]{flex:1;min-width:160px;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none;font-size:13px}
-.schedule-options input[type=text]:focus{border-color:var(--primary)}
-.schedule-timeline{padding:8px 0}
-.schedule-timeline .tl-row{display:flex;align-items:stretch;gap:0;margin-bottom:2px;min-height:44px}
-.schedule-timeline .tl-time{width:80px;flex-shrink:0;font-size:11px;font-weight:600;color:var(--text-secondary);padding:8px 8px 8px 0;text-align:right;border-right:2px solid var(--border);position:relative}
-.schedule-timeline .tl-time::after{content:'';position:absolute;right:-5px;top:50%;width:8px;height:8px;border-radius:50%;background:var(--border);transform:translateY(-50%)}
-.schedule-timeline .tl-block{flex:1;margin-left:16px;padding:8px 14px;border-radius:var(--radius-sm);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.schedule-timeline .tl-block.work{background:var(--primary-light);color:var(--primary);border-left:4px solid var(--primary)}
-.schedule-timeline .tl-block.break{background:var(--danger-bg);color:var(--danger-text);border-left:4px solid var(--danger)}
-.schedule-timeline .tl-block.free{background:var(--surface);color:var(--text-secondary);border:1.5px dashed var(--border);font-style:italic}
-.schedule-timeline .tl-block .tl-dur{font-size:11px;opacity:.7;white-space:nowrap}
-.schedule-empty-state{text-align:center;padding:30px 20px;color:var(--text-secondary);font-size:13px}
-.schedule-loading{text-align:center;padding:30px;color:var(--text-secondary);font-size:14px}
-.schedule-loading .spinner{display:inline-block;width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;margin-bottom:8px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.schedule-error{padding:14px 18px;background:var(--danger-bg);color:var(--danger-text);border-radius:var(--radius-sm);font-size:13px;margin-top:8px}
-@media(max-width:640px){.schedule-timeline .tl-time{width:60px;font-size:10px}.schedule-timeline .tl-block{font-size:12px;padding:6px 10px}}
+::selection { background: var(--primary); color: #fff; }
 
-/* === NEW: Stress Alert Modal === */
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
-.modal-box{background:var(--surface);border-radius:var(--radius);padding:32px 28px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);text-align:center;border:1px solid var(--border);animation:scaleIn .3s ease}
-@keyframes scaleIn{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
-.modal-icon{font-size:48px;display:block;margin-bottom:12px}
-.modal-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px}
-.modal-desc{font-size:14px;color:var(--text-secondary);line-height:1.6;margin-bottom:20px}
-.modal-btn{padding:10px 28px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:600;cursor:pointer;font-size:14px;transition:background .2s}
-.modal-btn:hover{background:var(--primary-hover)}
+input, button, textarea, select { font-family: inherit; }
+.hidden { display: none !important; }
 
-@media(max-width:640px){.badges-grid{grid-template-columns:repeat(3,1fr)}.points-bar{padding:12px 16px}.points-value{font-size:22px}.breathe-circle-wrap{width:160px;height:160px}.breathe-text{font-size:15px;width:130px}}
+/* ============ TOAST ============ */
+
+#toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  padding: 12px 24px;
+  border-radius: 10px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: none;
+  max-width: 90vw;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.error { background: var(--danger); color: #fff; }
+#toast.success { background: var(--success); color: #fff; }
+
+/* ============ AUTH ============ */
+
+#auth-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #fffbeb, #fef3c7, #fed7aa, #fef3c7, #fffbeb);
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.auth-box {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 40px 32px 32px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+  position: relative;
+}
+
+.auth-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #b45309, #d97706);
+  border-radius: 16px 16px 0 0;
+}
+
+.auth-box h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--primary);
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.auth-box .subtitle {
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.auth-box .field { margin-bottom: 16px; }
+
+.auth-box .field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.auth-box .field input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.auth-box .field input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.pw-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.pw-wrap input { flex: 1; padding-right: 70px !important; }
+
+.pw-toggle {
+  position: absolute;
+  right: 6px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.pw-toggle:hover { background: var(--primary-light); }
+
+.auth-box .btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 15px;
+  margin-top: 8px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.auth-box .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.auth-box .btn:active { transform: translateY(0); }
+.auth-box .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.auth-box .switch-link {
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-top: 18px;
+}
+
+.auth-box .switch-link a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-box .switch-link a:hover { text-decoration: underline; }
+
+.auth-error {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: none;
+  margin-bottom: 14px;
+}
+
+.auth-success {
+  background: var(--success-bg);
+  color: #166534;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: none;
+  margin-bottom: 14px;
+}
+
+/* ============ HEADER ============ */
+
+.app-header {
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme=dark] .app-header {
+  background: rgba(41, 37, 36, 0.85);
+}
+
+.header-inner {
+  max-width: 1024px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 8px;
+}
+
+.header-brand {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--primary);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 4px;
+  letter-spacing: -0.3px;
+}
+
+.header-nav {
+  display: flex;
+  gap: 1px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+  justify-content: center;
+  min-width: 0;
+}
+
+.header-nav::-webkit-scrollbar { display: none; }
+
+.nav-link {
+  padding: 6px 10px;
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.nav-link:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.nav-link.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.header-user {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 500;
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 14px;
+  transition: border-color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.btn-secondary {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11px;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.mobile-menu-btn {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+
+.mobile-menu-btn:hover { background: var(--primary-light); }
+
+.mobile-menu-btn span {
+  display: block;
+  width: 16px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+}
+
+/* ============ MAIN ============ */
+
+.app-main {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+  padding-left: 12px;
+  border-left: 3px solid var(--primary);
+}
+
+/* ============ DASHBOARD ============ */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 22px 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(135deg, #b45309, #d97706);
+}
+
+.stat-card:hover {
+  box-shadow: 0 4px 16px rgba(180, 83, 9, 0.08);
+}
+
+.stat-card .stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ============ AFFIRMATION ============ */
+
+.affirmation-card {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  border-radius: 16px;
+  padding: 28px;
+  color: #fff;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(180, 83, 9, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.affirmation-card::before {
+  content: '\201C';
+  position: absolute;
+  top: -6px;
+  left: 14px;
+  font-size: 72px;
+  opacity: 0.12;
+  line-height: 1;
+  font-family: Georgia, serif;
+  pointer-events: none;
+}
+
+.affirmation-card .affirmation-text {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.6;
+  text-align: center;
+  font-style: italic;
+}
+
+.affirmation-card .affirmation-author {
+  font-size: 12px;
+  opacity: 0.8;
+  text-align: center;
+  margin-top: 10px;
+  font-weight: 500;
+}
+
+.affirmation-card:hover {
+  box-shadow: 0 6px 28px rgba(180, 83, 9, 0.28);
+}
+
+/* ============ GAMIFICATION ============ */
+
+.points-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.points-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b45309, #d97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(180, 83, 9, 0.2);
+}
+
+.points-info { flex: 1; }
+.points-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.points-label { font-size: 12px; color: var(--text-dim); }
+
+.badges-section h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-left: 10px;
+  border-left: 3px solid var(--primary);
+}
+
+.badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.badge-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px 6px 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.badge-card.locked { opacity: 0.3; }
+
+.badge-bullet {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  background: var(--border);
+}
+
+.badge-card.unlocked .badge-bullet {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  box-shadow: 0 2px 6px rgba(180, 83, 9, 0.3);
+}
+
+.badge-card .badge-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.badge-card .badge-desc {
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* ============ EXPORT ============ */
+
+.export-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.export-btn {
+  padding: 7px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 11px;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.export-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+/* ============ PLANNER ============ */
+
+.planner-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.planner-input {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.planner-input input {
+  flex: 1;
+  min-width: 160px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.planner-input input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.planner-input input[type=date] {
+  min-width: 130px;
+  flex: 0 1 auto;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+.planner-filters {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.filter-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s;
+}
+
+.task-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.task-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  padding: 0;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.task-check:hover { border-color: var(--primary); background: var(--primary-light); }
+
+.task-check.checked {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.task-check.checked::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -1px;
+}
+
+.task-info { flex: 1; }
+.task-title { font-weight: 600; font-size: 14px; }
+
+.task-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+.task-delete {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 16px;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.task-delete:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+/* ============ MOOD ============ */
+
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.mood-btn {
+  padding: 28px 12px 24px;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.mood-btn[data-mood=happy] {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.mood-btn[data-mood=neutral] {
+  background: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.mood-btn[data-mood=stressed] {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.mood-btn:hover { transform: translateY(-3px); }
+
+.mood-btn.selected {
+  border-width: 3px;
+  transform: translateY(-3px);
+}
+
+.mood-btn[data-mood=happy].selected { border-color: #16a34a; background: #dcfce7; }
+.mood-btn[data-mood=neutral].selected { border-color: #d97706; background: #fef3c7; }
+.mood-btn[data-mood=stressed].selected { border-color: #dc2626; background: #fee2e2; }
+
+.mood-today {
+  margin-bottom: 20px;
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.mood-today h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  padding-left: 10px;
+  border-left: 3px solid var(--primary);
+}
+
+.mood-week {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 8px 0 0;
+}
+
+.mood-day { width: 60px; text-align: center; }
+
+.mood-day .day-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mood-day .day-block {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  background: var(--surface);
+  border: 2px dashed var(--border);
+  color: var(--text-dim);
+  transition: transform 0.15s;
+}
+
+.mood-day .day-block:hover { transform: scale(1.1); }
+
+.mood-day .day-block.happy {
+  background: var(--success-bg);
+  color: #3f6212;
+  border: 2px solid var(--success);
+}
+
+.mood-day .day-block.neutral {
+  background: var(--primary-light);
+  color: #92400e;
+  border: 2px solid var(--primary);
+}
+
+.mood-day .day-block.stressed {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border: 2px solid var(--danger);
+}
+
+.mood-day .day-date {
+  font-size: 9px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ============ HELP ============ */
+
+.help-search { margin-bottom: 20px; }
+
+.help-search input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 14px;
+  transition: border-color 0.2s;
+}
+
+.help-search input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.help-category { margin-bottom: 28px; }
+
+.help-category h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  padding-left: 10px;
+  border-left: 3px solid var(--primary);
+  color: var(--text);
+}
+
+.help-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.help-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  transition: box-shadow 0.2s;
+}
+
+.help-card:hover { box-shadow: 0 4px 16px rgba(180, 83, 9, 0.08); }
+
+.help-card h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+.help-card .help-phone {
+  font-size: 13px;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.help-card .help-phone a { color: var(--primary); text-decoration: none; }
+.help-card .help-phone a:hover { text-decoration: underline; }
+
+.help-card .help-website {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+.help-card .help-desc {
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+/* ============ BREATHING ============ */
+
+.breathe-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.breathe-circle-wrap {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 24px;
+}
+
+.breathe-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #f59e0b);
+  transition: transform 19s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(180, 83, 9, 0.2);
+}
+
+.breathe-circle.paused { transition: none !important; }
+
+.breathe-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  pointer-events: none;
+  width: 140px;
+  line-height: 1.4;
+}
+
+.breathe-phase {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 14px;
+  min-height: 18px;
+}
+
+.breathe-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.breathe-btn {
+  padding: 10px 28px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  color: #fff;
+}
+
+.breathe-btn.primary { background: linear-gradient(135deg, #b45309, #d97706); }
+.breathe-btn.primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.breathe-btn.secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1.5px solid var(--border);
+}
+
+.breathe-btn.secondary:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-light);
+}
+
+.breathe-counter {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 14px;
+  font-weight: 500;
+}
+
+/* ============ JOURNAL ============ */
+
+.journal-form {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.journal-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+}
+
+.journal-form textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.journal-form .journal-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.journal-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.journal-entry {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  transition: box-shadow 0.2s;
+}
+
+.journal-entry:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.journal-entry .journal-date {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.journal-entry .journal-text {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+/* ============ POMODORO ============ */
+
+.pomodoro-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.pomodoro-mode {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.pomodoro-timer {
+  font-size: 64px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.pomodoro-timer.break { color: var(--primary); }
+
+.pomodoro-progress {
+  width: 220px;
+  height: 5px;
+  background: var(--border);
+  border-radius: 3px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.pomodoro-progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #b45309, #d97706);
+  border-radius: 3px;
+  transition: width 1s linear;
+  width: 100%;
+}
+
+.pomodoro-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pomodoro-sessions {
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.pomodoro-presets {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.pomodoro-preset {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.pomodoro-preset.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.pomodoro-preset:hover:not(.active) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* ============ SCHEDULE ============ */
+
+.schedule-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.schedule-input-area textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 13px;
+  resize: vertical;
+  transition: border-color 0.2s;
+  line-height: 1.6;
+}
+
+.schedule-input-area textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.schedule-input-area .schedule-hint {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: -4px;
+}
+
+.schedule-options {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.schedule-options input[type=text] {
+  flex: 1;
+  min-width: 140px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  font-size: 12px;
+  transition: border-color 0.2s;
+}
+
+.schedule-options input[type=text]:focus { border-color: var(--primary); }
+
+.schedule-timeline { padding: 8px 0; }
+
+.schedule-timeline .tl-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin-bottom: 2px;
+  min-height: 42px;
+}
+
+.schedule-timeline .tl-time {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-dim);
+  padding: 10px 6px 10px 0;
+  text-align: right;
+  border-right: 2px solid var(--border);
+  position: relative;
+}
+
+.schedule-timeline .tl-time::after {
+  content: '';
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  transform: translateY(-50%);
+}
+
+.schedule-timeline .tl-block {
+  flex: 1;
+  margin-left: 14px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.schedule-timeline .tl-block.work {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-left: 3px solid var(--primary);
+}
+
+.schedule-timeline .tl-block.break {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-left: 3px solid var(--danger);
+}
+
+.schedule-timeline .tl-block.free {
+  background: var(--surface);
+  color: var(--text-dim);
+  border: 1.5px dashed var(--border);
+  font-style: italic;
+}
+
+.schedule-timeline .tl-block .tl-dur {
+  font-size: 10px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.schedule-empty-state {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.schedule-loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+.schedule-loading .spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-bottom: 8px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.schedule-error {
+  padding: 14px 16px;
+  background: var(--danger-bg);
+  color: var(--danger-text);
+  border-radius: 8px;
+  font-size: 12px;
+  margin-top: 8px;
+}
+
+/* ============ AI SCHEDULE ============ */
+
+.schedule-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+}
+
+.schedule-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+
+.schedule-item .sched-time {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.schedule-item .sched-title {
+  font-size: 12px;
+  flex: 1;
+  font-weight: 500;
+}
+
+.schedule-item .sched-priority {
+  font-size: 9px;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.schedule-empty {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--text-dim);
+  font-size: 13px;
+}
+
+/* ============ MODAL ============ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-box {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 32px 28px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.modal-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.modal-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.modal-btn {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.modal-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.modal-btn:active { transform: translateY(0); }
+
+/* ============ RESPONSIVE ============ */
+
+@media (max-width: 820px) {
+  .auth-box { padding: 32px 24px; box-shadow: none; border: none; }
+  .stats-grid { grid-template-columns: 1fr; gap: 10px; }
+  .mood-grid { gap: 8px; }
+  .mood-btn { padding: 20px 8px; font-size: 14px; }
+  .affirmation-card { padding: 22px 18px; }
+  .affirmation-card .affirmation-text { font-size: 15px; }
+
+  .header-inner { height: 52px; gap: 6px; }
+
+  .header-nav {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    flex-direction: column;
+    padding: 10px 14px;
+    display: none;
+    z-index: 99;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  }
+
+  .header-nav.open { display: flex; }
+
+  .nav-link {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 13px;
+    border-radius: 6px;
+  }
+
+  .mobile-menu-btn { display: flex; }
+  .header-user { display: none; }
+  .help-cards { grid-template-columns: 1fr; }
+  .app-main { padding: 16px 12px; }
+}
+
+@media (min-width: 821px) {
+  .mobile-menu-btn { display: none !important; }
+  .header-nav { display: flex !important; }
+}
+
+@media (max-width: 640px) {
+  .pomodoro-timer { font-size: 48px; }
+  .pomodoro-progress { width: 160px; }
+  .badges-grid { grid-template-columns: repeat(3, 1fr); }
+  .points-bar { padding: 14px; }
+  .points-value { font-size: 22px; }
+  .breathe-circle-wrap { width: 150px; height: 150px; }
+  .section-title { font-size: 16px; }
+  .stat-card { padding: 18px; }
+  .points-icon { width: 38px; height: 38px; font-size: 18px; }
+  .modal-box { padding: 24px 20px; }
+  .schedule-timeline .tl-time { width: 56px; font-size: 9px; }
+}
+
+@media (max-width: 400px) {
+  .badges-grid { grid-template-columns: repeat(2, 1fr); }
+  .planner-input { flex-direction: column; }
+  .planner-input input { min-width: 100%; }
+  .schedule-options { flex-direction: column; }
+  .mood-day { width: 48px; }
+  .mood-day .day-block { width: 36px; height: 36px; }
+}
 </style>
 </head>
 <body>
@@ -437,6 +1836,8 @@ input,button{font-family:inherit}
 
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
+<script src="supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 (function() {
     var firebaseConfig = {
@@ -451,25 +1852,28 @@ input,button{font-family:inherit}
     var auth = firebase.auth();
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
+    // ============ SUPABASE CLIENT ============
+    var supabaseUrl = SUPABASE_URL;
+    var supabaseAnonKey = SUPABASE_ANON_KEY;
+    var supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
     // ============ STATE ============
     var currentUser = null;
     var currentPage = 'dashboard';
     var tasks = [], moods = [], helplines = [], journals = [];
     var filterMode = 'all';
     var todayMood = null;
-    var db = null;
-    var dbReady = false;
     var gamificationData = null;
     var breatheInterval = null, breatheRunning = false, breatheCycle = 0, breathePhase = 'idle';
     var BADGE_DEFS = [
-        { id:'first-task', name:'First Step', desc:'Complete 1 task', icon:'\u{2B50}', check:function(s){return s.tasksDone>=1} },
-        { id:'task-10', name:'Task Master', desc:'Complete 10 tasks', icon:'\u{1F3C6}', check:function(s){return s.tasksDone>=10} },
-        { id:'mood-7', name:'Mood Tracker', desc:'Log 7 moods', icon:'\u{1F4CA}', check:function(s){return s.totalMoods>=7} },
-        { id:'streak-7', name:'Week Warrior', desc:'7-day streak', icon:'\u{1F525}', check:function(s){return s.streak>=7} },
-        { id:'streak-30', name:'Consistent', desc:'30-day streak', icon:'\u{1F4AA}', check:function(s){return s.streak>=30} },
-        { id:'journal-3', name:'Reflective', desc:'Write 3 journal entries', icon:'\u{1F4DD}', check:function(s){return s.journalCount>=3} },
-        { id:'journal-10', name:'Diarist', desc:'Write 10 journal entries', icon:'\u{1F4D6}', check:function(s){return s.journalCount>=10} },
-        { id:'all-moods', name:'Balanced', desc:'Logged all 3 moods', icon:'\u{1F9D0}', check:function(s){return s.moodVariety>=3} }
+        { id:'first-task', name:'First Step', desc:'Complete 1 task', check:function(s){return s.tasksDone>=1} },
+        { id:'task-10', name:'Task Master', desc:'Complete 10 tasks', check:function(s){return s.tasksDone>=10} },
+        { id:'mood-7', name:'Mood Tracker', desc:'Log 7 moods', check:function(s){return s.totalMoods>=7} },
+        { id:'streak-7', name:'Week Warrior', desc:'7-day streak', check:function(s){return s.streak>=7} },
+        { id:'streak-30', name:'Consistent', desc:'30-day streak', check:function(s){return s.streak>=30} },
+        { id:'journal-3', name:'Reflective', desc:'Write 3 journal entries', check:function(s){return s.journalCount>=3} },
+        { id:'journal-10', name:'Diarist', desc:'Write 10 journal entries', check:function(s){return s.journalCount>=10} },
+        { id:'all-moods', name:'Balanced', desc:'Logged all 3 moods', check:function(s){return s.moodVariety>=3} }
     ];
     var AFFIRMATIONS = [
         { text:'Take a deep breath. You are exactly where you need to be.', author:'Mindful Bharat' },
@@ -529,154 +1933,46 @@ input,button{font-family:inherit}
         qs('auth-success').style.display = 'none';
     }
 
-    // ============ INDEXEDDB ============
-    var DB_NAME = 'MindfulBharat', DB_VERSION = 5;
-    
-    function initDatabase() {
-        return new Promise(function(resolve, reject) {
-            var req = indexedDB.open(DB_NAME, DB_VERSION);
-            
-            req.onupgradeneeded = function(e) {
-                var d = e.target.result;
-                var oldV = e.oldVersion;
-                console.log('Migrating database from v' + oldV + '...');
-                
-                if (!d.objectStoreNames.contains('tasks')) {
-                    var ts = d.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true });
-                    ts.createIndex('userId', 'userId', { unique: false });
-                    console.log('Created tasks store');
-                }
-                
-                if (!d.objectStoreNames.contains('moods')) {
-                    var ms = d.createObjectStore('moods', { keyPath: 'id', autoIncrement: true });
-                    ms.createIndex('userId', 'userId', { unique: false });
-                    ms.createIndex('date', 'date', { unique: false });
-                    console.log('Created moods store');
-                }
-                
-                if (!d.objectStoreNames.contains('helplines')) {
-                    var hs = d.createObjectStore('helplines', { keyPath: 'id', autoIncrement: true });
-                    hs.createIndex('category', 'category', { unique: false });
-                    console.log('Created helplines store');
-                } else if (oldV < 5) {
-                    var hs = req.transaction.objectStore('helplines');
-                    hs.clear();
-                    console.log('Re-seeding helplines...');
-                }
-                
-                var hs = req.transaction.objectStore('helplines');
-                var data = [
-                    { category: 'Mental Health', name: 'Vandrevala Foundation', phone: '1860-266-2345', description: '24/7 mental health helpline', website: 'vandrevalafoundation.com' },
-                    { category: 'Mental Health', name: 'iCall Helpline', phone: '022-25521111', description: 'Free counselling', website: 'icallhelpline.org' },
-                    { category: 'Mental Health', name: 'Snehi Foundation', phone: '011-41036474', description: 'Emotional support', website: 'snehifoundation.org' },
-                    { category: 'Mental Health', name: 'Sumaitri', phone: '011-23389090', description: 'Emotional support (Mon-Sat 2-8PM)', website: 'sumaitri.org' },
-                    { category: 'Mental Health', name: 'Parivarthan', phone: '080-55554444', description: 'Counselling helpline (Mon-Fri 10AM-6PM)', website: 'parivarthan.org' },
-                    { category: 'Mental Health', name: 'Fortis Mental Health', phone: '8376804102', description: 'Mental health support', website: 'fortishealthcare.com' },
-                    { category: 'Mental Health', name: 'COOJ Mental Health', phone: '0832-2252525', description: 'Mental health support (Goa)', website: 'cooj.org' },
-                    { category: 'Mental Health', name: 'Lifeline Foundation', phone: '033-40447437', description: 'Emotional support (Kolkata)', website: 'lifelinefoundation.in' },
-                    { category: 'Mental Health', name: 'Roshni', phone: '040-66202000', description: 'Counselling (Hyderabad, 11AM-9PM)', website: 'roshnicounselling.com' },
-                    { category: 'Mental Health', name: 'Sahai', phone: '080-25497777', description: 'Emotional support (Bangalore, 10AM-8PM)', website: 'sahaifoundation.com' },
-                    { category: 'Mental Health', name: 'Maithri', phone: '0484-2540530', description: 'Counselling (Kochi, 10AM-6PM)', website: 'maithrikochi.org' },
-                    { category: 'Mental Health', name: 'Samaritans Mumbai', phone: '022-23094545', description: 'Emotional support (Mon-Fri 5-8PM)', website: 'samaritansmumbai.com' },
-                    { category: 'Crisis', name: 'KIRAN Helpline', phone: '1800-599-0019', description: '24/7 crisis support (Ministry of Social Justice)', website: 'kirannationalhelpline.in' },
-                    { category: 'Crisis', name: 'AASRA', phone: '9820466726', description: '24/7 suicide prevention', website: 'aasra.info' },
-                    { category: 'Crisis', name: 'S.A.A.S. Helpline', phone: '1800-123-4321', description: 'Suicide prevention', website: 'saashelpline.org' },
-                    { category: 'Crisis', name: 'Jeevan Aastha', phone: '1800-233-3330', description: 'Crisis intervention', website: 'jeevanaastha.in' },
-                    { category: 'Crisis', name: 'Connecting India', phone: '1800-209-4353', description: 'Mental health & crisis support', website: 'connectingindia.org' },
-                    { category: 'Crisis', name: 'Sukoon Health', phone: '1800-120-8200', description: '24/7 mental health crisis', website: 'sukoonhealth.com' },
-                    { category: 'Women & Child', name: 'Women\'s Helpline', phone: '181', description: 'National women\'s distress helpline', website: 'wcd.nic.in' },
-                    { category: 'Women & Child', name: 'Child Helpline', phone: '1098', description: '24/7 child protection (CHILDLINE)', website: 'childlineindia.org.in' },
-                    { category: 'Women & Child', name: 'Domestic Violence', phone: '1800-102-2900', description: 'Domestic violence support', website: 'ncw.nic.in' },
-                    { category: 'Women & Child', name: 'National Commission for Women', phone: '7827170170', description: 'Women\'s rights & complaints', website: 'ncw.nic.in' },
-                    { category: 'Women & Child', name: 'Shakti Shalini', phone: '10920', description: 'Women\'s crisis support', website: 'shaktishalini.org' },
-                    { category: 'Women & Child', name: 'RAHI Foundation', phone: '011-47194900', description: 'Recovery from sexual abuse', website: 'rahifoundation.org' },
-                    { category: 'Medical', name: 'National Emergency', phone: '112', description: 'All-in-one emergency (police/fire/ambulance)' },
-                    { category: 'Medical', name: 'Ambulance', phone: '108', description: 'Emergency ambulance (most states)' },
-                    { category: 'Medical', name: 'National Health Helpline', phone: '1800-180-1104', description: 'Health information & support (Ministry of Health)' },
-                    { category: 'Medical', name: 'Poison Helpline', phone: '011-26593655', description: '24/7 poison information (AIIMS Delhi)' },
-                    { category: 'Medical', name: 'Quit Tobacco', phone: '1800-11-2356', description: 'Tobacco cessation support' },
-                    { category: 'General', name: 'Senior Citizens Helpline', phone: '14567', description: 'Elder care support (Elder Line)', website: 'elderline.nic.in' },
-                    { category: 'General', name: 'Tourist Helpline', phone: '1363', description: '24/7 tourist assistance (Ministry of Tourism)' },
-                    { category: 'General', name: 'Railway Helpline', phone: '139', description: 'Railway enquiries & assistance (Indian Railways)' },
-                    { category: 'General', name: 'Anti-Corruption', phone: '1800-11-8800', description: 'Anti-corruption helpline (CVC)' },
-                    { category: 'General', name: 'Election Helpline', phone: '1950', description: 'Voter assistance (Election Commission)' },
-                    { category: 'General', name: 'LPG Leak / Emergency', phone: '1906', description: 'Gas leak emergency helpline' }
-                ];
-                data.forEach(function(h) { hs.add(h); });
-                
-                if (!d.objectStoreNames.contains('journal')) {
-                    var js = d.createObjectStore('journal', { keyPath: 'id', autoIncrement: true });
-                    js.createIndex('userId', 'userId', { unique: false });
-                    js.createIndex('date', 'date', { unique: false });
-                    console.log('Created journal store');
-                }
-                
-                if (!d.objectStoreNames.contains('gamification')) {
-                    d.createObjectStore('gamification', { keyPath: 'userId' });
-                    console.log('Created gamification store');
-                }
-            };
-            
-            req.onsuccess = function(e) { 
-                db = e.target.result; 
-                dbReady = true; 
-                console.log('Database ready');
-                resolve(); 
-            };
-            
-            req.onerror = function(e) { 
-                console.error('Database error:', e.target.error);
-                reject(e.target.error); 
-            };
-        });
-    }
+    // ============ SUPABASE HELPERS ============
+    function sbQuery(table) { return supabaseClient.from(table); }
 
-    function dbAdd(store, data) {
-        return new Promise(function(resolve, reject) {
-            if (!dbReady || !db) { reject('DB not ready'); return; }
-            var tx = db.transaction(store, 'readwrite');
-            var req = tx.objectStore(store).add(data);
-            req.onsuccess = function() { resolve(req.result); };
-            req.onerror = function() { reject(req.error); };
-        });
-    }
-    
-    function dbGet(store, key) {
-        return new Promise(function(resolve, reject) {
-            if (!dbReady || !db) { reject('DB not ready'); return; }
-            var req = db.transaction(store, 'readonly').objectStore(store).get(key);
-            req.onsuccess = function() { resolve(req.result); };
-            req.onerror = function() { reject(req.error); };
-        });
-    }
-    
-    function dbGetAll(store, idx, val) {
-        return new Promise(function(resolve, reject) {
-            if (!dbReady || !db) { reject('DB not ready'); return; }
-            var storeObj = db.transaction(store, 'readonly').objectStore(store);
-            var req = idx ? storeObj.index(idx).getAll(val) : storeObj.getAll();
-            req.onsuccess = function() { resolve(req.result); };
-            req.onerror = function() { reject(req.error); };
-        });
-    }
-    
-    function dbUpdate(store, key, data) {
-        return new Promise(function(resolve, reject) {
-            if (!dbReady || !db) { reject('DB not ready'); return; }
-            var req = db.transaction(store, 'readwrite').objectStore(store).put(data);
-            req.onsuccess = function() { resolve(req.result); };
-            req.onerror = function() { reject(req.error); };
-        });
-    }
-    
-    function dbDelete(store, key) {
-        return new Promise(function(resolve, reject) {
-            if (!dbReady || !db) { reject('DB not ready'); return; }
-            var req = db.transaction(store, 'readwrite').objectStore(store).delete(key);
-            req.onsuccess = function() { resolve(); };
-            req.onerror = function() { reject(req.error); };
-        });
-    }
+    var HELPLINES_DATA = [
+        { category: 'Mental Health', name: 'Vandrevala Foundation', phone: '1860-266-2345', description: '24/7 mental health helpline', website: 'vandrevalafoundation.com' },
+        { category: 'Mental Health', name: 'iCall Helpline', phone: '022-25521111', description: 'Free counselling', website: 'icallhelpline.org' },
+        { category: 'Mental Health', name: 'Snehi Foundation', phone: '011-41036474', description: 'Emotional support', website: 'snehifoundation.org' },
+        { category: 'Mental Health', name: 'Sumaitri', phone: '011-23389090', description: 'Emotional support (Mon-Sat 2-8PM)', website: 'sumaitri.org' },
+        { category: 'Mental Health', name: 'Parivarthan', phone: '080-55554444', description: 'Counselling helpline (Mon-Fri 10AM-6PM)', website: 'parivarthan.org' },
+        { category: 'Mental Health', name: 'Fortis Mental Health', phone: '8376804102', description: 'Mental health support', website: 'fortishealthcare.com' },
+        { category: 'Mental Health', name: 'COOJ Mental Health', phone: '0832-2252525', description: 'Mental health support (Goa)', website: 'cooj.org' },
+        { category: 'Mental Health', name: 'Lifeline Foundation', phone: '033-40447437', description: 'Emotional support (Kolkata)', website: 'lifelinefoundation.in' },
+        { category: 'Mental Health', name: 'Roshni', phone: '040-66202000', description: 'Counselling (Hyderabad, 11AM-9PM)', website: 'roshnicounselling.com' },
+        { category: 'Mental Health', name: 'Sahai', phone: '080-25497777', description: 'Emotional support (Bangalore, 10AM-8PM)', website: 'sahaifoundation.com' },
+        { category: 'Mental Health', name: 'Maithri', phone: '0484-2540530', description: 'Counselling (Kochi, 10AM-6PM)', website: 'maithrikochi.org' },
+        { category: 'Mental Health', name: 'Samaritans Mumbai', phone: '022-23094545', description: 'Emotional support (Mon-Fri 5-8PM)', website: 'samaritansmumbai.com' },
+        { category: 'Crisis', name: 'KIRAN Helpline', phone: '1800-599-0019', description: '24/7 crisis support (Ministry of Social Justice)', website: 'kirannationalhelpline.in' },
+        { category: 'Crisis', name: 'AASRA', phone: '9820466726', description: '24/7 suicide prevention', website: 'aasra.info' },
+        { category: 'Crisis', name: 'S.A.A.S. Helpline', phone: '1800-123-4321', description: 'Suicide prevention', website: 'saashelpline.org' },
+        { category: 'Crisis', name: 'Jeevan Aastha', phone: '1800-233-3330', description: 'Crisis intervention', website: 'jeevanaastha.in' },
+        { category: 'Crisis', name: 'Connecting India', phone: '1800-209-4353', description: 'Mental health & crisis support', website: 'connectingindia.org' },
+        { category: 'Crisis', name: 'Sukoon Health', phone: '1800-120-8200', description: '24/7 mental health crisis', website: 'sukoonhealth.com' },
+        { category: 'Women & Child', name: 'Women\'s Helpline', phone: '181', description: 'National women\'s distress helpline', website: 'wcd.nic.in' },
+        { category: 'Women & Child', name: 'Child Helpline', phone: '1098', description: '24/7 child protection (CHILDLINE)', website: 'childlineindia.org.in' },
+        { category: 'Women & Child', name: 'Domestic Violence', phone: '1800-102-2900', description: 'Domestic violence support', website: 'ncw.nic.in' },
+        { category: 'Women & Child', name: 'National Commission for Women', phone: '7827170170', description: 'Women\'s rights & complaints', website: 'ncw.nic.in' },
+        { category: 'Women & Child', name: 'Shakti Shalini', phone: '10920', description: 'Women\'s crisis support', website: 'shaktishalini.org' },
+        { category: 'Women & Child', name: 'RAHI Foundation', phone: '011-47194900', description: 'Recovery from sexual abuse', website: 'rahifoundation.org' },
+        { category: 'Medical', name: 'National Emergency', phone: '112', description: 'All-in-one emergency (police/fire/ambulance)' },
+        { category: 'Medical', name: 'Ambulance', phone: '108', description: 'Emergency ambulance (most states)' },
+        { category: 'Medical', name: 'National Health Helpline', phone: '1800-180-1104', description: 'Health information & support (Ministry of Health)' },
+        { category: 'Medical', name: 'Poison Helpline', phone: '011-26593655', description: '24/7 poison information (AIIMS Delhi)' },
+        { category: 'Medical', name: 'Quit Tobacco', phone: '1800-11-2356', description: 'Tobacco cessation support' },
+        { category: 'General', name: 'Senior Citizens Helpline', phone: '14567', description: 'Elder care support (Elder Line)', website: 'elderline.nic.in' },
+        { category: 'General', name: 'Tourist Helpline', phone: '1363', description: '24/7 tourist assistance (Ministry of Tourism)' },
+        { category: 'General', name: 'Railway Helpline', phone: '139', description: 'Railway enquiries & assistance (Indian Railways)' },
+        { category: 'General', name: 'Anti-Corruption', phone: '1800-11-8800', description: 'Anti-corruption helpline (CVC)' },
+        { category: 'General', name: 'Election Helpline', phone: '1950', description: 'Voter assistance (Election Commission)' },
+        { category: 'General', name: 'LPG Leak / Emergency', phone: '1906', description: 'Gas leak emergency helpline' }
+    ];
 
     // ============ AUTH FUNCTIONS ============
     function signup(email, password) {
@@ -707,8 +2003,9 @@ input,button{font-family:inherit}
     function loadTasks() {
         var uid = getUserId();
         if (!uid) return Promise.resolve([]);
-        return dbGetAll('tasks', 'userId', uid).then(function(r) {
-            tasks = r.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+        return sbQuery('tasks').select('*').eq('user_id', uid).order('created_at', { ascending: false }).then(function(resp) {
+            if (resp.error) throw resp.error;
+            tasks = resp.data || [];
             return tasks;
         }).catch(function() { tasks = []; return tasks; });
     }
@@ -716,24 +2013,35 @@ input,button{font-family:inherit}
     function loadMoods() {
         var uid = getUserId();
         if (!uid) return Promise.resolve([]);
-        return dbGetAll('moods', 'userId', uid).then(function(r) {
-            moods = r.sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
+        return sbQuery('moods').select('*').eq('user_id', uid).order('date', { ascending: false }).then(function(resp) {
+            if (resp.error) throw resp.error;
+            moods = resp.data || [];
             return moods;
         }).catch(function() { moods = []; return moods; });
     }
     
     function loadHelplines() {
-        return dbGetAll('helplines').then(function(r) {
-            helplines = r.sort(function(a, b) { return a.category.localeCompare(b.category); });
-            return helplines;
+        return sbQuery('helplines').select('*').order('category', { ascending: true }).then(function(resp) {
+            if (resp.error) throw resp.error;
+            if (resp.data && resp.data.length) {
+                helplines = resp.data;
+                return helplines;
+            }
+            return sbQuery('helplines').insert(HELPLINES_DATA).then(function() {
+                return sbQuery('helplines').select('*').order('category', { ascending: true }).then(function(r) {
+                    helplines = r.data || [];
+                    return helplines;
+                });
+            });
         }).catch(function() { helplines = []; return helplines; });
     }
     
     function loadJournals() {
         var uid = getUserId();
         if (!uid) return Promise.resolve([]);
-        return dbGetAll('journal', 'userId', uid).then(function(r) {
-            journals = r.sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+        return sbQuery('journal').select('*').eq('user_id', uid).order('created_at', { ascending: false }).then(function(resp) {
+            if (resp.error) throw resp.error;
+            journals = resp.data || [];
             return journals;
         }).catch(function() { journals = []; return journals; });
     }
@@ -741,9 +2049,10 @@ input,button{font-family:inherit}
     function loadGamification() {
         var uid = getUserId();
         if (!uid) return Promise.resolve(null);
-        return dbGet('gamification', uid).then(function(r) {
-            gamificationData = r;
-            return r;
+        return sbQuery('gamification').select('*').eq('user_id', uid).then(function(resp) {
+            if (resp.error) throw resp.error;
+            gamificationData = (resp.data && resp.data.length) ? resp.data[0] : null;
+            return gamificationData;
         }).catch(function() { gamificationData = null; return null; });
     }
     
@@ -752,25 +2061,26 @@ input,button{font-family:inherit}
     function addTask(title, dueDate) {
         if (!getUserId()) { toast('Login first', 'error'); return; }
         var task = { 
-            userId: getUserId(), 
+            user_id: getUserId(), 
             title: title, 
             completed: false, 
-            dueDate: dueDate || null, 
-            createdAt: new Date().toISOString() 
+            due_date: dueDate || null, 
+            created_at: new Date().toISOString() 
         };
-        dbAdd('tasks', task).then(function(id) {
-            task.id = id;
-            tasks.unshift(task);
+        sbQuery('tasks').insert(task).select().then(function(resp) {
+            if (resp.error) throw resp.error;
+            var saved = resp.data[0];
+            tasks.unshift(saved);
             renderPlanner();
             toast('Task added', 'success');
-        }).catch(function() { toast('Failed to add task', 'error'); });
+        }).catch(function(e) { console.error('addTask error:', e); toast('Failed to add task', 'error'); });
     }
 
     function toggleTask(id, completed) {
         var task = tasks.find(function(t) { return t.id === id; });
         if (!task) return;
-        var updated = { ...task, completed: completed };
-        dbUpdate('tasks', id, updated).then(function() {
+        sbQuery('tasks').update({ completed: completed }).eq('id', id).then(function(resp) {
+            if (resp.error) throw resp.error;
             task.completed = completed;
             renderPlanner();
             if (completed) {
@@ -778,15 +2088,16 @@ input,button{font-family:inherit}
                 checkBadges();
                 renderDashboard();
             }
-        }).catch(function() { toast('Failed to update', 'error'); });
+        }).catch(function(e) { console.error('toggleTask error:', e); toast('Failed to update', 'error'); });
     }
 
     function deleteTask(id) {
-        dbDelete('tasks', id).then(function() {
+        sbQuery('tasks').delete().eq('id', id).then(function(resp) {
+            if (resp.error) throw resp.error;
             tasks = tasks.filter(function(t) { return t.id !== id; });
             renderPlanner();
             toast('Task deleted', 'success');
-        }).catch(function() { toast('Failed to delete', 'error'); });
+        }).catch(function(e) { console.error('deleteTask error:', e); toast('Failed to delete', 'error'); });
     }
 
     function setMood(mood) {
@@ -795,24 +2106,25 @@ input,button{font-family:inherit}
         var existing = moods.find(function(m) { return m.date === today; });
         
         if (existing) {
-            var updated = { ...existing, mood: mood };
-            dbUpdate('moods', existing.id, updated).then(function() {
+            sbQuery('moods').update({ mood: mood }).eq('id', existing.id).then(function(resp) {
+                if (resp.error) throw resp.error;
                 existing.mood = mood;
                 todayMood = mood;
                 renderMood();
                 if (mood === 'stressed') checkStressStreak();
                 toast('Mood updated', 'success');
-            }).catch(function() { toast('Failed to update', 'error'); });
+            }).catch(function(e) { console.error('setMood update error:', e); toast('Failed to update', 'error'); });
         } else {
             var entry = { 
-                userId: getUserId(), 
+                user_id: getUserId(), 
                 mood: mood, 
                 date: today, 
-                createdAt: new Date().toISOString() 
+                created_at: new Date().toISOString() 
             };
-            dbAdd('moods', entry).then(function(id) {
-                entry.id = id;
-                moods.unshift(entry);
+            sbQuery('moods').insert(entry).select().then(function(resp) {
+                if (resp.error) throw resp.error;
+                var saved = resp.data[0];
+                moods.unshift(saved);
                 todayMood = mood;
                 renderMood();
                 addPoints(5);
@@ -820,7 +2132,7 @@ input,button{font-family:inherit}
                 renderDashboard();
                 if (mood === 'stressed') checkStressStreak();
                 toast('Mood logged', 'success');
-            }).catch(function() { toast('Failed to log', 'error'); });
+            }).catch(function(e) { console.error('setMood insert error:', e); toast('Failed to log', 'error'); });
         }
     }
 
@@ -884,7 +2196,7 @@ input,button{font-family:inherit}
         
         var html = '';
         filtered.forEach(function(task) {
-            var dateStr = task.dueDate ? new Date(task.dueDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
+            var dateStr = task.due_date ? new Date(task.due_date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : '';
             html += '<div class="task-item' + (task.completed ? ' completed' : '') + '">' +
                 '<button class="task-check' + (task.completed ? ' checked' : '') + '" data-id="' + task.id + '" data-completed="' + task.completed + '"></button>' +
                 '<div class="task-info"><div class="task-title">' + escapeHtml(task.title) + '</div>' +
@@ -1215,9 +2527,9 @@ input,button{font-family:inherit}
         
         var pending = tasks.filter(function(t) { return !t.completed; });
         pending.sort(function(a, b) {
-            if (a.dueDate && b.dueDate) return a.dueDate < b.dueDate ? -1 : 1;
-            if (a.dueDate) return -1;
-            if (b.dueDate) return 1;
+            if (a.due_date && b.due_date) return a.due_date < b.due_date ? -1 : 1;
+            if (a.due_date) return -1;
+            if (b.due_date) return 1;
             return 0;
         });
         
@@ -1247,8 +2559,8 @@ input,button{font-family:inherit}
         var leftover = pending.length - schedule.length;
         var html = '<div class="schedule-list">';
         schedule.forEach(function(item) {
-            var priority = item.task.dueDate ? 
-                'Due ' + new Date(item.task.dueDate + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 
+            var priority = item.task.due_date ? 
+                'Due ' + new Date(item.task.due_date + 'T00:00:00').toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 
                 'Flexible';
             html += '<div class="schedule-item"><div class="sched-time">' + item.timeRange + '</div><div class="sched-title">' + escapeHtml(item.task.title) + '</div><div class="sched-priority">' + priority + '</div></div>';
         });
@@ -1265,19 +2577,20 @@ input,button{font-family:inherit}
         var text = qs('journal-input').value.trim();
         if (!text) { toast('Write something first', 'error'); return; }
         var entry = {
-            userId: getUserId(),
+            user_id: getUserId(),
             text: text,
             date: new Date().toISOString().split('T')[0],
-            createdAt: new Date().toISOString()
+            created_at: new Date().toISOString()
         };
-        dbAdd('journal', entry).then(function(id) {
-            entry.id = id;
-            journals.unshift(entry);
+        sbQuery('journal').insert(entry).select().then(function(resp) {
+            if (resp.error) throw resp.error;
+            var saved = resp.data[0];
+            journals.unshift(saved);
             qs('journal-input').value = '';
             renderJournal();
             addPoints(5);
             toast('Entry saved', 'success');
-        }).catch(function() { toast('Failed to save', 'error'); });
+        }).catch(function(e) { console.error('saveJournal error:', e); toast('Failed to save', 'error'); });
     }
 
     function renderJournal() {
@@ -1288,7 +2601,7 @@ input,button{font-family:inherit}
         }
         var html = '';
         journals.forEach(function(e) {
-            var d = new Date(e.createdAt);
+            var d = new Date(e.created_at);
             var dateStr = d.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
             html += '<div class="journal-entry"><div class="journal-date">' + dateStr + '</div><div class="journal-text">' + escapeHtml(e.text) + '</div></div>';
         });
@@ -1300,19 +2613,28 @@ input,button{font-family:inherit}
         if (gamificationData) return Promise.resolve(gamificationData);
         var uid = getUserId();
         if (!uid) return Promise.resolve(null);
-        var data = { userId: uid, points: 0, badges: [] };
-        return dbAdd('gamification', data).then(function() {
-            gamificationData = data;
-            return data;
+        return sbQuery('gamification').select('*').eq('user_id', uid).then(function(resp) {
+            if (resp.error) throw resp.error;
+            if (resp.data && resp.data.length) {
+                gamificationData = resp.data[0];
+                return gamificationData;
+            }
+            return sbQuery('gamification').insert({ user_id: uid, points: 0, badges: [] }).select().then(function(r) {
+                if (r.error) throw r.error;
+                gamificationData = r.data[0];
+                return gamificationData;
+            });
         }).catch(function() { return null; });
     }
 
     function addPoints(amount) {
         if (!gamificationData) return;
         gamificationData.points += amount;
-        dbUpdate('gamification', gamificationData.userId, gamificationData).then(function() {
-            renderPoints();
-            checkBadges();
+        sbQuery('gamification').update({ points: gamificationData.points }).eq('user_id', gamificationData.user_id).then(function(resp) {
+            if (!resp.error) {
+                renderPoints();
+                checkBadges();
+            }
         }).catch(function() {});
     }
 
@@ -1340,13 +2662,15 @@ input,button{font-family:inherit}
         });
         if (newlyUnlocked.length) {
             gamificationData.badges = unlocked;
-            dbUpdate('gamification', gamificationData.userId, gamificationData).then(function() {
-                renderBadges();
-                renderDashboard();
-                newlyUnlocked.forEach(function(b) {
-                    toast('Badge unlocked: ' + b.name + ' ' + b.icon, 'success');
-                });
-                confetti();
+            sbQuery('gamification').update({ badges: unlocked }).eq('user_id', gamificationData.user_id).then(function(resp) {
+                if (!resp.error) {
+                    renderBadges();
+                    renderDashboard();
+                    newlyUnlocked.forEach(function(b) {
+                        toast('Badge unlocked: ' + b.name, 'success');
+                    });
+                    confetti();
+                }
             }).catch(function() {});
         }
     }
@@ -1361,7 +2685,7 @@ input,button{font-family:inherit}
         var html = '';
         BADGE_DEFS.forEach(function(b) {
             var isUnlocked = unlocked.indexOf(b.id) !== -1;
-            html += '<div class="badge-card ' + (isUnlocked ? 'unlocked' : 'locked') + '"><span class="badge-icon">' + b.icon + '</span><div class="badge-name">' + b.name + '</div><div class="badge-desc">' + b.desc + '</div></div>';
+            html += '<div class="badge-card ' + (isUnlocked ? 'unlocked' : 'locked') + '"><div class="badge-bullet"></div><div class="badge-name">' + b.name + '</div><div class="badge-desc">' + b.desc + '</div></div>';
         });
         grid.innerHTML = html;
     }
@@ -1374,7 +2698,7 @@ input,button{font-family:inherit}
         var ctx = canvas.getContext('2d');
         var W = canvas.width = window.innerWidth;
         var H = canvas.height = window.innerHeight;
-        var colors = ['#ff6b6b','#feca57','#48dbfb','#ff9ff3','#54a0ff','#5f27cd','#1dd1a1','#ff6348'];
+        var colors = ['#b45309','#d97706','#f59e0b','#fbbf24','#fcd34d','#92400e','#ea580c','#eab308'];
         var pieces = [];
         for (var i = 0; i < 150; i++) {
             pieces.push({
@@ -1553,12 +2877,12 @@ input,button{font-family:inherit}
 
     // ============ STRESS ALERT ============
     var STRESS_QUOTES = [
-        { msg:'You\'ve been feeling stressed lately. Remember to take deep breaths and give yourself a break.', icon:'\u{1F30A}' },
-        { msg:'Your well-being comes first. Step back, rest, and recharge.', icon:'\u{1F3A7}' },
-        { msg:'It\'s okay to not be okay. Take a moment for yourself today.', icon:'\u{1F49A}' },
-        { msg:'Stress is a sign your mind needs care. Try the breathing exercise or take a walk.', icon:'\u{1F33F}' },
-        { msg:'You are doing your best. Be kind to yourself and take a rest.', icon:'\u{1F31F}' },
-        { msg:'Your mental health matters more than anything. Pause and breathe.', icon:'\u{1F9E0}' }
+        'You\'ve been feeling stressed lately. Remember to take deep breaths and give yourself a break.',
+        'Your well-being comes first. Step back, rest, and recharge.',
+        'It\'s okay to not be okay. Take a moment for yourself today.',
+        'Stress is a sign your mind needs care. Try the breathing exercise or take a walk.',
+        'You are doing your best. Be kind to yourself and take a rest.',
+        'Your mental health matters more than anything. Pause and breathe.'
     ];
 
     function checkStressStreak() {
@@ -1583,12 +2907,12 @@ input,button{font-family:inherit}
         }
     }
 
-    function showStressModal(quote, days) {
+    function showStressModal(msg, days) {
         var existing = document.querySelector('.modal-overlay');
         if (existing) existing.remove();
         var overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
-        overlay.innerHTML = '<div class="modal-box"><span class="modal-icon">' + quote.icon + '</span><div class="modal-title">Take a moment</div><div class="modal-desc">You\'ve been stressed for ' + days + ' days in a row.<br><br>' + quote.msg + '</div><button class="modal-btn" id="modal-close-btn">I\'ll take care</button></div>';
+        overlay.innerHTML = '<div class="modal-box"><div class="modal-icon" style="font-size:32px;font-weight:300;color:var(--primary);line-height:1">;;</div><div class="modal-title">Take a moment</div><div class="modal-desc">You\'ve been stressed for ' + days + ' days in a row.<br><br>' + msg + '</div><button class="modal-btn" id="modal-close-btn">I\'ll take care</button></div>';
         document.body.appendChild(overlay);
         qs('modal-close-btn').addEventListener('click', function() {
             overlay.remove();
@@ -1684,6 +3008,7 @@ input,button{font-family:inherit}
             return;
         }
         
+        var slotsStr = qs('ai-free-slots').value.trim();
         var slots = [];
         if (slotsStr) {
             var parts = slotsStr.split(',').map(function(s) { return s.trim(); }).filter(function(s) { return s; });
@@ -1907,28 +3232,23 @@ input,button{font-family:inherit}
     });
 
     // ============ INIT ============
-    initDatabase().then(function() {
-        auth.onAuthStateChanged(function(user) {
-            if (user) {
-                currentUser = user;
-                qs('header-user').textContent = user.email;
-                showApp();
-                loadAll().then(function() {
-                    initGamificationIfNeeded().then(function() {
-                        renderPoints();
-                        renderBadges();
-                        renderAffirmation();
-                        navigate('dashboard');
-                    });
+    auth.onAuthStateChanged(function(user) {
+        if (user) {
+            currentUser = user;
+            qs('header-user').textContent = user.email;
+            showApp();
+            loadAll().then(function() {
+                initGamificationIfNeeded().then(function() {
+                    renderPoints();
+                    renderBadges();
+                    renderAffirmation();
+                    navigate('dashboard');
                 });
-            } else {
-                currentUser = null;
-                showAuth();
-            }
-        });
-    }).catch(function(err) {
-        console.error('DB init error:', err);
-        toast('Failed to initialize database. Please refresh.', 'error');
+            });
+        } else {
+            currentUser = null;
+            showAuth();
+        }
     });
 
 })();
