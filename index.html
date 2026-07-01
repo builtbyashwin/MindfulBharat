@@ -1550,6 +1550,161 @@ input, button, textarea, select { font-family: inherit; }
 .modal-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 .modal-btn:active { transform: translateY(0); }
 
+/* ============ CPS TEST ============ */
+
+.cps-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.cps-stats {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.cps-stat {
+  flex: 1;
+  text-align: center;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px 8px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.cps-stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.cps-stat-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.cps-presets {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.cps-preset {
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 600;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.cps-preset.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+.cps-preset:hover:not(.active) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.cps-click-area {
+  width: 260px;
+  height: 200px;
+  border-radius: 20px;
+  border: 3px dashed var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s, border-color 0.1s, transform 0.08s;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cps-click-area:active {
+  transform: scale(0.97);
+}
+
+.cps-click-area.active {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+.cps-click-area.finished {
+  border-color: var(--success);
+  background: var(--success-bg);
+  color: var(--success);
+  cursor: default;
+}
+
+.cps-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.cps-history {
+  width: 100%;
+  max-width: 400px;
+}
+
+.cps-history-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  padding-left: 8px;
+  border-left: 3px solid var(--primary);
+  color: var(--text);
+}
+
+.cps-history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cps-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.cps-history-item .cps-hi-cps {
+  font-weight: 700;
+  color: var(--primary);
+}
+
 /* ============ RESPONSIVE ============ */
 
 @media (max-width: 820px) {
@@ -1663,6 +1818,7 @@ input, button, textarea, select { font-family: inherit; }
                 <button class="nav-link" data-page="schedule">Schedule</button>
                 <button class="nav-link" data-page="journal">Journal</button>
                 <button class="nav-link" data-page="help">Help</button>
+                <button class="nav-link" data-page="cps">CPS Test</button>
             </nav>
             <div class="header-actions">
                 <span class="header-user" id="header-user"></span>
@@ -1829,6 +1985,39 @@ input, button, textarea, select { font-family: inherit; }
             <h2 class="section-title">Help Hub</h2>
             <div class="help-search"><input type="text" id="help-search-input" placeholder="Search helplines..."></div>
             <div id="help-results"></div>
+        </section>
+
+        <section id="page-cps" class="page">
+            <h2 class="section-title">CPS Test</h2>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px">Click as fast as you can! Test your clicks per second.</p>
+            <div class="cps-wrap">
+                <div class="cps-stats">
+                    <div class="cps-stat">
+                        <div class="cps-stat-value" id="cps-clicks">0</div>
+                        <div class="cps-stat-label">Clicks</div>
+                    </div>
+                    <div class="cps-stat">
+                        <div class="cps-stat-value" id="cps-time">10</div>
+                        <div class="cps-stat-label">Seconds</div>
+                    </div>
+                    <div class="cps-stat">
+                        <div class="cps-stat-value" id="cps-result">0.0</div>
+                        <div class="cps-stat-label">CPS</div>
+                    </div>
+                </div>
+                <div class="cps-presets">
+                    <button class="cps-preset active" data-seconds="10">10s</button>
+                    <button class="cps-preset" data-seconds="5">5s</button>
+                    <button class="cps-preset" data-seconds="15">15s</button>
+                    <button class="cps-preset" data-seconds="30">30s</button>
+                </div>
+                <button class="cps-click-area" id="cps-click-area">Click here!</button>
+                <div class="cps-controls">
+                    <button class="btn-primary" id="cps-start-btn">Start</button>
+                    <button class="btn-secondary" id="cps-reset-btn">Reset</button>
+                </div>
+                <div class="cps-history" id="cps-history"></div>
+            </div>
         </section>
     </main>
 </div>
@@ -2294,6 +2483,7 @@ input, button, textarea, select { font-family: inherit; }
         if (page === 'pomodoro') { /* rendered via DOM, no-op */ }
         if (page === 'schedule') { /* rendered via DOM, no-op */ }
         if (page === 'journal') renderJournal();
+        if (page === 'cps') { cpsLoadResults().then(cpsRenderHistory); }
     }
 
     function showApp() {
@@ -2888,22 +3078,10 @@ input, button, textarea, select { font-family: inherit; }
     function checkStressStreak() {
         var uid = getUserId();
         if (!uid) return;
-        var sorted = moods.slice().sort(function(a, b) { return a.date < b.date ? 1 : -1; });
-        var streak = 0;
-        var checkDate = new Date();
-        for (var i = 0; i < sorted.length; i++) {
-            var d = checkDate.toISOString().split('T')[0];
-            var match = sorted.find(function(m) { return m.date === d; });
-            if (match && match.mood === 'stressed') {
-                streak++;
-                checkDate.setDate(checkDate.getDate() - 1);
-            } else {
-                break;
-            }
-        }
-        if (streak >= 2) {
+        var stressedCount = moods.filter(function(m) { return m.mood === 'stressed'; }).length;
+        if (stressedCount > 2) {
             var quote = STRESS_QUOTES[Math.floor(Math.random() * STRESS_QUOTES.length)];
-            showStressModal(quote, streak);
+            showStressModal(quote, stressedCount);
         }
     }
 
@@ -2912,7 +3090,7 @@ input, button, textarea, select { font-family: inherit; }
         if (existing) existing.remove();
         var overlay = document.createElement('div');
         overlay.className = 'modal-overlay';
-        overlay.innerHTML = '<div class="modal-box"><div class="modal-icon" style="font-size:32px;font-weight:300;color:var(--primary);line-height:1">;;</div><div class="modal-title">Take a moment</div><div class="modal-desc">You\'ve been stressed for ' + days + ' days in a row.<br><br>' + msg + '</div><button class="modal-btn" id="modal-close-btn">I\'ll take care</button></div>';
+        overlay.innerHTML = '<div class="modal-box"><div class="modal-icon" style="font-size:32px;font-weight:300;color:var(--primary);line-height:1">;;</div><div class="modal-title">Take a moment</div><div class="modal-desc">You\'ve logged feeling stressed ' + days + ' times.<br><br>' + msg + '</div><button class="modal-btn" id="modal-close-btn">I\'ll take care</button></div>';
         document.body.appendChild(overlay);
         qs('modal-close-btn').addEventListener('click', function() {
             overlay.remove();
@@ -2921,6 +3099,111 @@ input, button, textarea, select { font-family: inherit; }
         overlay.addEventListener('click', function(e) {
             if (e.target === overlay) overlay.remove();
         });
+    }
+
+    // ============ CPS TEST ============
+    var cpsSeconds = 10, cpsRunning = false, cpsClicks = 0, cpsTimer = null;
+    var cpsHistory = JSON.parse(localStorage.getItem('cps_history') || '[]');
+    var cpsDbResults = [];
+
+    function cpsSetDuration(seconds) {
+        if (cpsRunning) return;
+        cpsSeconds = seconds;
+        qs('cps-time').textContent = seconds;
+        qs('cps-result').textContent = '0.0';
+        qs('cps-clicks').textContent = '0';
+        document.querySelectorAll('.cps-preset').forEach(function(b) {
+            b.classList.toggle('active', parseInt(b.dataset.seconds) === seconds);
+        });
+    }
+
+    function cpsStart() {
+        if (cpsRunning) return;
+        cpsRunning = true;
+        cpsClicks = 0;
+        var remaining = cpsSeconds;
+        var area = qs('cps-click-area');
+        area.classList.remove('finished');
+        area.classList.add('active');
+        area.textContent = 'Click!';
+        qs('cps-clicks').textContent = '0';
+        qs('cps-result').textContent = '0.0';
+        qs('cps-start-btn').textContent = 'Running...';
+
+        cpsTimer = setInterval(function() {
+            remaining--;
+            qs('cps-time').textContent = remaining;
+            if (remaining <= 0) {
+                clearInterval(cpsTimer);
+                cpsRunning = false;
+                area.classList.remove('active');
+                area.classList.add('finished');
+                qs('cps-start-btn').textContent = 'Start';
+                var cps = cpsClicks / cpsSeconds;
+                qs('cps-result').textContent = cps.toFixed(1);
+                qs('cps-time').textContent = '0';
+                cpsHistory.unshift({ clicks: cpsClicks, cps: cps, seconds: cpsSeconds, date: new Date().toISOString() });
+                if (cpsHistory.length > 10) cpsHistory = cpsHistory.slice(0, 10);
+                localStorage.setItem('cps_history', JSON.stringify(cpsHistory));
+                cpsSaveResult(cpsClicks, cps, cpsSeconds);
+                cpsRenderHistory();
+                toast('CPS: ' + cps.toFixed(1) + ' clicks/sec', 'success');
+            }
+        }, 1000);
+    }
+
+    function cpsClick() {
+        if (!cpsRunning) return;
+        cpsClicks++;
+        qs('cps-clicks').textContent = cpsClicks;
+    }
+
+    function cpsReset() {
+        clearInterval(cpsTimer);
+        cpsRunning = false;
+        cpsClicks = 0;
+        var area = qs('cps-click-area');
+        area.classList.remove('active', 'finished');
+        area.textContent = 'Click here!';
+        qs('cps-clicks').textContent = '0';
+        qs('cps-time').textContent = cpsSeconds;
+        qs('cps-result').textContent = '0.0';
+        qs('cps-start-btn').textContent = 'Start';
+    }
+
+    function cpsSaveResult(clicks, cps, seconds) {
+        if (!getUserId()) return;
+        sbQuery('cps_results').insert({
+            user_id: getUserId(),
+            clicks: clicks,
+            cps: cps,
+            seconds: seconds
+        }).then().catch(function(e) { console.error('cps save error:', e); });
+    }
+
+    function cpsLoadResults() {
+        if (!getUserId()) return Promise.resolve([]);
+        return sbQuery('cps_results').select('*').eq('user_id', getUserId()).order('created_at', { ascending: false }).limit(20).then(function(resp) {
+            if (resp.error) throw resp.error;
+            cpsDbResults = resp.data || [];
+            return cpsDbResults;
+        }).catch(function() { cpsDbResults = []; return []; });
+    }
+
+    function cpsRenderHistory() {
+        var container = qs('cps-history');
+        if (!cpsHistory.length) {
+            container.innerHTML = '';
+            return;
+        }
+        var html = '<div class="cps-history-title">Last 10 Tests</div><div class="cps-history-list">';
+        cpsHistory.forEach(function(h) {
+            var d = new Date(h.date);
+            var dateStr = d.toLocaleDateString('en-IN', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+            html += '<div class="cps-history-item"><span>' + h.clicks + ' clicks in ' + h.seconds + 's &middot; ' + dateStr + '</span><span class="cps-hi-cps">' + h.cps.toFixed(1) + ' CPS</span></div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
     }
 
     // ============ AFFIRMATIONS ============
@@ -3215,6 +3498,16 @@ input, button, textarea, select { font-family: inherit; }
     });
     qs('pomodoro-start-btn').addEventListener('click', pomodoroStart);
     qs('pomodoro-reset-btn').addEventListener('click', pomodoroReset);
+
+    // ============ CPS EVENT HANDLERS ============
+    document.querySelectorAll('.cps-preset').forEach(function(b) {
+        b.addEventListener('click', function() {
+            cpsSetDuration(parseInt(b.dataset.seconds));
+        });
+    });
+    qs('cps-click-area').addEventListener('click', cpsClick);
+    qs('cps-start-btn').addEventListener('click', cpsStart);
+    qs('cps-reset-btn').addEventListener('click', cpsReset);
 
     qs('schedule-generate-btn').addEventListener('click', generateSchedule);
     qs('schedule-ai-btn').addEventListener('click', function() {
